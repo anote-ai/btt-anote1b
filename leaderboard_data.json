@@ -1,0 +1,27 @@
+[
+  {
+    "id": "ce4da73c-71c8-4e25-8d1c-474f8eb5bd22",
+    "name": "FinanceBench - Retrieval Accuracy",
+    "url": "https://github.com/patronus-ai/financebench",
+    "task_type": "retrieval",
+    "description": "Financial document retrieval accuracy benchmark",
+    "models": [
+      {
+        "rank": 1,
+        "model": "GPT-4o Fine Tuned",
+        "score": 0.632,
+        "ci": "0.61 - 0.65",
+        "updated": "Oct 2024"
+      },
+      {
+        "rank": 2,
+        "model": "Mistral Fine Tuned",
+        "score": 0.612,
+        "ci": "0.59 - 0.63",
+        "updated": "Oct 2024"
+      }
+    ],
+    "created_at": "2025-09-06T14:47:22.713388",
+    "updated_at": "2025-09-06T14:48:05.651791"
+  }
+]
