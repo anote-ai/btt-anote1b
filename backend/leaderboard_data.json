@@ -1,0 +1,115 @@
+[
+  {
+    "id": "ce4da73c-71c8-4e25-8d1c-474f8eb5bd22",
+    "name": "FinanceBench - Retrieval Accuracy",
+    "url": "https://github.com/patronus-ai/financebench",
+    "task_type": "retrieval",
+    "description": "Financial document retrieval accuracy benchmark",
+    "models": [
+      {
+        "rank": 1,
+        "model": "Test Model 1761331382839",
+        "score": 0.875404118753523,
+        "ci": "0.90 - 0.94",
+        "updated": "Dec 2024"
+      },
+      {
+        "rank": 2,
+        "model": "Test Model 1761331668771",
+        "score": 0.7214297131814646,
+        "ci": "0.90 - 0.94",
+        "updated": "Dec 2024"
+      },
+      {
+        "rank": 3,
+        "model": "GPT-4o Fine Tuned",
+        "score": 0.632,
+        "ci": "0.61 - 0.65",
+        "updated": "Oct 2024"
+      },
+      {
+        "rank": 4,
+        "model": "Mistral Fine Tuned",
+        "score": 0.612,
+        "ci": "0.59 - 0.63",
+        "updated": "Oct 2024"
+      }
+    ],
+    "created_at": "2025-09-06T14:47:22.713388",
+    "updated_at": "2025-10-24T14:47:48.779277"
+  },
+  {
+    "id": "7ca03608-c3a4-43f2-a960-23b95fb629ee",
+    "name": "Test Dataset - Classification 1761331330926",
+    "url": "https://example.com/test-dataset",
+    "task_type": "text_classification",
+    "description": "A test dataset for classification tasks",
+    "models": [
+      {
+        "rank": 1,
+        "model": "Test Model 1",
+        "score": 0.95,
+        "ci": "0.93 - 0.97",
+        "updated": "Dec 2024"
+      }
+    ],
+    "created_at": "2025-10-24T14:42:10.962238",
+    "updated_at": "2025-10-24T14:42:10.962252"
+  },
+  {
+    "id": "51310956-1e51-4bcc-9808-bb5c22f29906",
+    "name": "Test Dataset - Classification 1761331657736",
+    "url": "https://example.com/test-dataset",
+    "task_type": "text_classification",
+    "description": "A test dataset for classification tasks",
+    "models": [
+      {
+        "rank": 1,
+        "model": "Test Model 1",
+        "score": 0.95,
+        "ci": "0.93 - 0.97",
+        "updated": "Dec 2024"
+      }
+    ],
+    "created_at": "2025-10-24T14:47:37.748122",
+    "updated_at": "2025-10-24T14:47:37.748141"
+  },
+  {
+    "id": "425f482b-5ab5-4afb-a74a-08efacc62d6b",
+    "name": "Custom Dataset - 1761331660209",
+    "url": "https://example.com/custom",
+    "task_type": "text_classification",
+    "description": "Custom test dataset",
+    "models": [],
+    "created_at": "2025-10-24T14:47:40.215230",
+    "updated_at": "2025-10-24T14:47:40.215262"
+  },
+  {
+    "id": "4dab58f5-a446-4454-a01a-ebe582cef52a",
+    "name": "Custom Dataset - 1761331672201",
+    "url": "https://example.com/custom",
+    "task_type": "text_classification",
+    "description": "Custom test dataset",
+    "models": [],
+    "created_at": "2025-10-24T14:47:52.206862",
+    "updated_at": "2025-10-24T14:47:52.206869"
+  },
+  {
+    "id": "86e9272b-98d6-4cc4-a9dd-9c2822cae237",
+    "name": "Test Dataset - Classification 1761332064176",
+    "url": "https://example.com/test-dataset",
+    "task_type": "text_classification",
+    "description": "A test dataset for classification tasks",
+    "models": [
+      {
+        "rank": 1,
+        "model": "Test Model 1",
+        "score": 0.95,
+        "ci": "0.93 - 0.97",
+        "updated": "Dec 2024"
+      }
+    ],
+    "created_at": "2025-10-24T14:54:24.180932",
+    "updated_at": "2025-10-24T14:54:24.180937"
+  }
+]
