@@ -5,12 +5,12 @@ A **production-ready** leaderboard platform for benchmarking AI models across mu
 
 ## 👥 Team Members
 
-| Name             | GitHub Handle | Contribution                                                             |
-|------------------|---------------|--------------------------------------------------------------------------|
-| Jeremy Ky        | @jeremyky     |                                                                          |
-| Linh Nguyen      | @linhnguyen   | Set up backend API to submit dataset and model                           |
-| [Name]           | [GitHub]      |                                                                          |
-| [Name]           | [GitHub]      | Domain-specific datasets, task-specific evaluators, documentation        |
+| Name             | GitHub Handle    | Contribution                                                             |
+|------------------|---------------   |--------------------------------------------------------------------------|
+| Jeremy Ky        | @jeremyky        |                                                                          |
+| Linh Nguyen      | @linhnguyen2901  | Set up backend API to submit dataset and model                           |
+| [Name]           | [GitHub]         |                                                                          |
+| [Name]           | [GitHub]         | Domain-specific datasets, task-specific evaluators, documentation        |
 
 ---
 
