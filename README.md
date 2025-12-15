@@ -10,8 +10,9 @@ A **production-ready** leaderboard platform for benchmarking AI models across mu
 | Jeremy Ky        | @jeremyky        |                                                                          |
 | Linh Nguyen      | @linhnguyen2901  | Set up backend API to submit dataset and model                           |
 | Stella Sourelos  | @StellaSourelos  | Supported new task types.                                                        |
-| [Name]           | [GitHub]         | Domain-specific datasets, task-specific evaluators, documentation        |
-
+| Machelle Le         | @machellee    | Domain-specific datasets, task-specific evaluators, documentation        |
+| Kalina Monova       | @    |       |
+| Ashley Zhang        | @    |       |
 ---
 
 ## ✨ Project Highlights
