@@ -2,12 +2,85 @@ import React, { useState } from "react";
 import { submittoleaderboardPath } from "../../constants/RouteConstants";
 import { useNavigate } from "react-router-dom";
 
+// Function to add a new dataset via API POST request
+async function addDataset(datasetData) {
+  const response = await fetch('/api/leaderboard/add_dataset', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(datasetData),
+  });
+  const result = await response.json();
+  if (result.status === 'success') {
+    alert('Dataset successfully added!');
+  } else {
+    alert('Failed to add dataset: ' + result.message);
+  }
+}
+
+// Function to add a new model via API POST request
+async function addModel(modelData) {
+  const response = await fetch('/api/leaderboard/add_model', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(modelData),
+  });
+  const result = await response.json();
+  if (result.status === 'success') {
+    alert('Model successfully added!');
+    // Optional: refresh leaderboard data here
+  } else {
+    alert('Failed to add model: ' + result.message);
+  }
+}
+
+
 const Leaderboard = () => {
   const [openIndex, setOpenIndex] = useState(null);
 
   const handleClick = (index) => {
     setOpenIndex(openIndex === index ? null : index);
+  
+  const taskTypes = [
+  "text_classification",
+  "named_entity_recognition",
+  "document_level_qa",
+  "line_level_qa",
+  // Add more for future extensibility
+];
+
+const [selectedTaskType, setSelectedTaskType] = useState("all");
+
+// Filter datasets by selectedTaskType
+const filteredDatasets = selectedTaskType === "all"
+  ? datasets
+  : datasets.filter(ds => ds.task_type === selectedTaskType);
+
   };
+  // Example handler for submitting a new dataset
+const handleAddDataset = () => {
+  const datasetData = {
+    name: 'New Dataset Name',
+    url: 'https://example.com/dataset',
+    task_type: 'text_classification',
+    description: 'Description of dataset',
+    models: [], // initially empty
+  };
+  addDataset(datasetData);
+};
+
+// Example handler for submitting a new model
+const handleAddModel = () => {
+  const modelData = {
+    dataset_name: 'Existing Dataset Name',
+    model: 'ModelName',
+    rank: 1,
+    score: 0.95,
+    ci: '0.93 - 0.97',
+    updated: 'Nov 2025',
+  };
+  addModel(modelData);
+};
+
 
   const faqs = [
     {
@@ -974,6 +1047,7 @@ const Leaderboard = () => {
       <h1 className="text-4xl font-bold text-white mb-4 mt-8">LLM Leaderboards</h1>
       <button
         className="btn-black px-6 py-2 mb-8 rounded-md text-lg font-semibold transition-colors"
+        
         // onClick={() => {navigate(submittoleaderboardPath);}}
         // href="mailto:nvidra@anote.ai"
         onClick={() => window.open("      https://docs.google.com/forms/d/e/1FAIpQLSdydF_8sfJQP0ub6VLs9uced32kfHxrvlQzyFRf0IhR1MlMRg/viewform?usp=dialog", "_blank")}
@@ -981,24 +1055,50 @@ const Leaderboard = () => {
       >
         Submit Model to Leaderboard
       </button>
+      <select
+        className="mb-4 p-2 rounded"
+        value={selectedTaskType}
+        onChange={e => setSelectedTaskType(e.target.value)}
+      >     
+      <option value="all">All Task Types</option>
+      {taskTypes.map(tt => (
+      <option key={tt} value={tt}>{tt.replace(/_/g, " ")}</option>
+      ))}
+      </select>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {datasets.map((dataset, index) => (
-          <div
-            key={index}
-            className="w-full max-w-3xl p-4 bg-gray-950 rounded-lg shadow-lg"
+      <div className="flex space-x-4 mb-4">
+      {/* Add Dataset Button */}
+      <button
+        className="btn-black px-4 py-2 rounded-md text-lg font-semibold transition-colors"
+        onClick={handleAddDataset}
+      >
+        Add Dataset
+      </button>
+      {/* Add Model Button */}
+      <button
+        className="btn-black px-4 py-2 rounded-md text-lg font-semibold transition-colors"
+        onClick={handleAddModel}
+      >
+        Add Model
+      </button>
+      </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {filteredDatasets.map((dataset, index) => (
+        <div key={index} className="w-full max-w-3xl p-4 bg-gray-950 rounded-lg shadow-lg">
+        <div className="flex justify-between items-center mb-4">
+        <div>
+          <h2 className="text-xl font-bold text-white">{dataset.name}</h2>
+          <p className="text-sm text-gray-400 italic">{dataset.task_type}</p> {/* Added task type display */}
+        </div>
+          <a
+            href={dataset.url}
+            className="text-blue-400 hover:text-blue-500 text-sm underline"
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-white">{dataset.name}</h2>
-              <a
-                href={dataset.url}
-                className="text-blue-400 hover:text-blue-500 text-sm underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                View Dataset
-              </a>
-            </div>
+            View Dataset
+          </a>
+          </div>
             <div className="grid grid-cols-4 text-white font-bold text-center bg-gray-900 p-4 rounded-t-lg">
               <div>Rank</div>
               <div>Model</div>
