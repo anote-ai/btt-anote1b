@@ -2,20 +2,20 @@
 
 A **production-ready** leaderboard platform for benchmarking AI models across multiple domains and task types.
 
-## Overview
 
-The Anote Leaderboard is a comprehensive evaluation platform featuring:
-- **30+ benchmark datasets** across general, finance, multilingual, science, code, and safety domains
-- **5 task types** (text classification, NER, QA, line QA, retrieval)
-- **20+ evaluation metrics** with detailed explanations
-- **Premium React UI** with multiple view modes, model comparison, and submission history
-- **FastAPI backend** with caching, rate limiting, and structured logging
-- **HuggingFace integration** for easy dataset imports
-- **Complete test suite** and CI/CD pipelines
+## 👥 Team Members
 
+| Name             | GitHub Handle    | Contribution                                                             |
+|------------------|---------------   |--------------------------------------------------------------------------|
+| Jeremy Ky        | @jeremyky        |                                                                          |
+| Linh Nguyen      | @linhnguyen2901  | Set up backend API to submit dataset and model                           |
+| Stella Sourelos  | @StellaSourelos  | Supported new task types.                                                        |
+| Machelle Le         | @machellee    | Domain-specific datasets, task-specific evaluators, documentation        |
+| Kalina Monova       | @    |       |
+| Ashley Zhang        | @    |       |
 ---
 
-## ✨ Key Features
+## ✨ Project Highlights
 
 ### 📊 Comprehensive Benchmarks
 - **30+ datasets** with 50-2000 examples each
@@ -51,7 +51,7 @@ The Anote Leaderboard is a comprehensive evaluation platform featuring:
 
 ---
 
-## 🚀 Quick Start
+##  👩🏽‍💻 **Setup and Installation**
 
 ### 1. Clone and Install
 
@@ -107,6 +107,19 @@ npm run dev
 ```
 
 Frontend will be available at `http://localhost:3000`
+
+---
+
+## 🏗️ **Overview**
+
+The Anote Leaderboard is a comprehensive evaluation platform featuring:
+- **30+ benchmark datasets** across general, finance, multilingual, science, code, and safety domains
+- **5 task types** (text classification, NER, QA, line QA, retrieval)
+- **20+ evaluation metrics** with detailed explanations
+- **Premium React UI** with multiple view modes, model comparison, and submission history
+- **FastAPI backend** with caching, rate limiting, and structured logging
+- **HuggingFace integration** for easy dataset imports
+- **Complete test suite** and CI/CD pipelines
 
 ---
 
