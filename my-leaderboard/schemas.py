@@ -146,3 +146,11 @@ class ErrorResponse(BaseModel):
     message: str
     details: Optional[Dict[str, Any]] = None
 
+
+class MeResponse(BaseModel):
+    """Identity probe for SPA (matches Anote session / JWT)."""
+    authenticated: bool
+    auth_mode: str = "off"
+    sub: Optional[str] = None
+    email: Optional[str] = None
+

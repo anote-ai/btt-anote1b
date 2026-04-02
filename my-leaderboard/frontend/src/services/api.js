@@ -117,6 +117,12 @@ export const healthCheck = async () => {
   return response.data;
 };
 
+/** Identity when LEADERBOARD_AUTH_MODE=jwt on the API (Anote JWT / introspect). */
+export const getMe = async () => {
+  const response = await api.get('/api/me');
+  return response.data;
+};
+
 // Metrics info APIs
 export const getMetricInfo = async (metricName) => {
   const response = await api.get(`/api/metrics/${metricName}`);

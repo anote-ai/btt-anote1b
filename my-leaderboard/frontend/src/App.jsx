@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import Home from './pages/Home';
 import CreateDataset from './pages/CreateDataset';
@@ -9,11 +9,27 @@ import DatasetLeaderboard from './pages/DatasetLeaderboard';
 import LegacyDatasetRedirect from './pages/LegacyDatasetRedirect';
 import AdminLeaderboard from './pages/AdminLeaderboard';
 import Docs from './pages/Docs';
-import { getApiBaseUrl } from './services/api';
+import { getApiBaseUrl, getMe } from './services/api';
 
 const API_BASE_URL = getApiBaseUrl();
 
 function App() {
+  const [me, setMe] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    getMe()
+      .then((data) => {
+        if (!cancelled) setMe(data);
+      })
+      .catch(() => {
+        if (!cancelled) setMe({ authenticated: false, auth_mode: 'unknown' });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <Router>
       <div className="min-h-screen bg-gray-900">
@@ -69,6 +85,16 @@ function App() {
                 >
                   Submit Model
                 </Link>
+                {me?.auth_mode === 'jwt' && (
+                  <span
+                    className="hidden lg:inline-block max-w-[10rem] truncate text-xs text-gray-500"
+                    title={me.authenticated ? me.email || me.sub || '' : 'Sign in via Anote'}
+                  >
+                    {me.authenticated
+                      ? me.email || me.sub || 'Signed in'
+                      : 'Anote: not signed in'}
+                  </span>
+                )}
               </div>
             </div>
           </div>

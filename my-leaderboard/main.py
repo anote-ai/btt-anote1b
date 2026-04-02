@@ -6,16 +6,24 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List, Optional, Any
 import math
+import os
 import uuid
 from datetime import datetime
 
+from auth import (
+    AuthUser,
+    auth_mode,
+    log_auth_config,
+    require_write_user,
+    resolve_user,
+)
 from database import get_db, init_db
 from models import Dataset, Submission, LeaderboardEntry, TaskType, SubmissionStatus
 from schemas import (
     DatasetCreate, DatasetResponse, DatasetPublic,
     SubmissionCreate, SubmissionResponse,
     LeaderboardResponse, LeaderboardEntryResponse,
-    SuccessResponse, ErrorResponse
+    SuccessResponse, ErrorResponse, MeResponse,
 )
 from evaluators import get_evaluator
 from evaluation_service import evaluate_submission
@@ -72,14 +80,25 @@ app = FastAPI(
     ]
 )
 
-# CORS middleware for frontend integration
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Configure this for production
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# CORS: for cross-subdomain cookies + credentials, set LEADERBOARD_CORS_ORIGINS (comma-separated).
+_cors_origins = (os.getenv("LEADERBOARD_CORS_ORIGINS") or "").strip()
+if _cors_origins:
+    _cors_list = [o.strip() for o in _cors_origins.split(",") if o.strip()]
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=_cors_list,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+else:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 # Setup rate limiting
 limiter = setup_rate_limiting(app)
@@ -89,6 +108,7 @@ limiter = setup_rate_limiting(app)
 async def startup_event():
     """Initialize database on startup"""
     init_db()
+    log_auth_config()
     logger.info("Leaderboard API started successfully")
     print("Leaderboard API started successfully")
 
@@ -97,8 +117,10 @@ async def startup_event():
 
 @app.post("/api/datasets", response_model=SuccessResponse, status_code=201)
 async def create_dataset(
+    request: Request,
     dataset: DatasetCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    _auth_user: Optional[AuthUser] = Depends(require_write_user),
 ):
     """
     Create a new benchmark dataset
@@ -254,7 +276,8 @@ async def submit_predictions(
     request: Request,
     submission: SubmissionCreate,
     background_tasks: BackgroundTasks,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    auth_user: Optional[AuthUser] = Depends(require_write_user),
 ):
     """
     Submit model predictions for evaluation
@@ -269,6 +292,12 @@ async def submit_predictions(
     
     # Create submission
     submission_id = str(uuid.uuid4())
+    merged_meta = dict(submission.submission_metadata or {})
+    if auth_user and (auth_user.sub or auth_user.email):
+        merged_meta.setdefault(
+            "anote_user",
+            {"sub": auth_user.sub, "email": auth_user.email},
+        )
     db_submission = Submission(
         id=submission_id,
         dataset_id=submission.dataset_id,
@@ -277,7 +306,7 @@ async def submit_predictions(
         organization=submission.organization,
         predictions=submission.predictions,
         is_internal=submission.is_internal,
-        submission_metadata=submission.submission_metadata,
+        submission_metadata=merged_meta or None,
         status=SubmissionStatus.PENDING
     )
     
@@ -527,7 +556,11 @@ async def get_dataset_leaderboard(
 
 @app.post("/api/admin/seed-data", response_model=SuccessResponse)
 @limiter.limit(RATE_LIMITS["admin"])
-async def seed_sample_data(request: Request, db: Session = Depends(get_db)):
+async def seed_sample_data(
+    request: Request,
+    db: Session = Depends(get_db),
+    _auth_user: Optional[AuthUser] = Depends(require_write_user),
+):
     """
     Load sample datasets and baseline models
     
@@ -613,7 +646,8 @@ async def import_from_huggingface(
     config: str = "default",
     split: str = "test",
     num_samples: int = 100,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    _auth_user: Optional[AuthUser] = Depends(require_write_user),
 ):
     """
     Import a dataset from HuggingFace Hub
@@ -705,6 +739,23 @@ async def get_task_metrics(task_type: str):
 
 # ==================== Health Check & Monitoring ====================
 
+@app.get("/api/me", response_model=MeResponse)
+async def api_me(request: Request):
+    """Who is calling (JWT / session validated like OpenAnote)."""
+    mode = auth_mode()
+    if mode != "jwt":
+        return MeResponse(authenticated=False, auth_mode=mode)
+    user = resolve_user(request)
+    if not user:
+        return MeResponse(authenticated=False, auth_mode=mode)
+    return MeResponse(
+        authenticated=True,
+        auth_mode=mode,
+        sub=user.sub,
+        email=user.email,
+    )
+
+
 @app.get("/health")
 async def health_check():
     """Health check endpoint"""
@@ -713,14 +764,21 @@ async def health_check():
 
 @app.get("/api/admin/cache-stats")
 @limiter.limit(RATE_LIMITS["admin"])
-async def get_cache_statistics(request: Request):
+async def get_cache_statistics(
+    request: Request,
+    _auth_user: Optional[AuthUser] = Depends(require_write_user),
+):
     """Get cache statistics for monitoring"""
     return get_cache_stats()
 
 
 @app.post("/api/admin/clear-cache")
 @limiter.limit(RATE_LIMITS["admin"])
-async def clear_cache(request: Request, dataset_id: Optional[str] = None):
+async def clear_cache(
+    request: Request,
+    dataset_id: Optional[str] = None,
+    _auth_user: Optional[AuthUser] = Depends(require_write_user),
+):
     """Clear cache (all or for specific dataset)"""
     invalidate_leaderboard_cache(dataset_id)
     return SuccessResponse(

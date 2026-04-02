@@ -1,6 +1,11 @@
 """
 Shared pytest fixtures for all tests
 """
+import os
+
+# Keep integration tests unauthenticated unless a test sets LEADERBOARD_AUTH_MODE explicitly.
+os.environ.setdefault("LEADERBOARD_AUTH_MODE", "off")
+
 import pytest
 from database import SessionLocal, init_db
 from models import Base, Dataset, Submission
