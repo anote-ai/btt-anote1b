@@ -4,23 +4,28 @@ Caching layer for leaderboard queries
 Uses in-memory caching with TTL to reduce database load for frequently accessed
 leaderboards. In production, consider Redis for distributed caching.
 """
-from typing import Optional, Any, Callable
+from typing import Optional, Callable
 from functools import wraps
 from cachetools import TTLCache
 import hashlib
-import json
 
 # In-memory cache with 5-minute TTL and max 1000 entries
 leaderboard_cache = TTLCache(maxsize=1000, ttl=300)  # 5 minutes
 
 
-def cache_key(*args, **kwargs) -> str:
-    """Generate a cache key from function arguments"""
-    key_data = {
-        "args": args,
-        "kwargs": kwargs
-    }
-    key_str = json.dumps(key_data, sort_keys=True, default=str)
+def _leaderboard_cache_key(func_name: str, kwargs: dict) -> str:
+    """
+    Stable cache key from primitive params only (no Request / DB session).
+    Avoids json.dumps failures on Starlette Request / SQLAlchemy Session.
+    """
+    parts = [func_name]
+    if kwargs.get("task_type") is not None:
+        parts.append(f"task={kwargs['task_type']}")
+    if kwargs.get("dataset_id") is not None:
+        parts.append(f"ds={kwargs['dataset_id']}")
+    if "include_internal" in kwargs:
+        parts.append(f"inc={kwargs['include_internal']}")
+    key_str = "|".join(parts)
     return hashlib.md5(key_str.encode()).hexdigest()
 
 
@@ -36,7 +41,7 @@ def cached_leaderboard(func: Callable) -> Callable:
     @wraps(func)
     async def wrapper(*args, **kwargs):
         # Generate cache key
-        key = f"{func.__name__}:{cache_key(*args, **kwargs)}"
+        key = f"{func.__name__}:{_leaderboard_cache_key(func.__name__, kwargs)}"
         
         # Check cache
         if key in leaderboard_cache:

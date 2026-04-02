@@ -1,8 +1,17 @@
 import axios from 'axios';
 
-/** Strip trailing slash to avoid double-slash in URLs */
+/**
+ * API origin (no trailing slash).
+ * - If VITE_API_URL is set → use it (must match the port where FastAPI listens).
+ * - In dev, if unset → '' so requests stay on the Vite origin and /api is proxied (see vite.config.js).
+ * - In production builds, if unset → http://localhost:8000 (override for deployed API).
+ */
 export function getApiBaseUrl() {
-  return (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+  const raw = import.meta.env.VITE_API_URL;
+  const trimmed = typeof raw === 'string' ? raw.trim() : '';
+  if (trimmed) return trimmed.replace(/\/$/, '');
+  if (import.meta.env.DEV) return '';
+  return 'http://localhost:8000'.replace(/\/$/, '');
 }
 
 const API_BASE_URL = getApiBaseUrl();
@@ -87,6 +96,18 @@ export const importFromHuggingFace = async (datasetName, config = 'default', spl
   const response = await api.post('/api/admin/import-huggingface', null, {
     params: { dataset_name: datasetName, config, split, num_samples: numSamples }
   });
+  return response.data;
+};
+
+export const getAdminCacheStats = async () => {
+  const response = await api.get('/api/admin/cache-stats');
+  return response.data;
+};
+
+/** @param {string | null | undefined} datasetId omit or null to clear all leaderboard cache */
+export const clearAdminCache = async (datasetId) => {
+  const params = datasetId ? { dataset_id: datasetId } : {};
+  const response = await api.post('/api/admin/clear-cache', null, { params });
   return response.data;
 };
 

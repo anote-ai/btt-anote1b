@@ -7,6 +7,7 @@ import DomainBenchmarks from './pages/DomainBenchmarks';
 import SubmissionHistory from './pages/SubmissionHistory';
 import DatasetLeaderboard from './pages/DatasetLeaderboard';
 import LegacyDatasetRedirect from './pages/LegacyDatasetRedirect';
+import AdminLeaderboard from './pages/AdminLeaderboard';
 import Docs from './pages/Docs';
 import { getApiBaseUrl } from './services/api';
 
@@ -57,6 +58,12 @@ function App() {
                   Create Dataset
                 </Link>
                 <Link
+                  to="/leaderboard/admin"
+                  className="hidden md:inline-block text-gray-500 hover:text-gray-300 px-2 py-2 rounded-md text-xs font-medium transition-colors"
+                >
+                  Admin
+                </Link>
+                <Link
                   to="/submit"
                   className="btn-black px-4 py-2 rounded-md text-sm font-medium"
                 >
@@ -79,7 +86,7 @@ function App() {
           <Route path="/submittoleaderboard" element={<Navigate to="/submit" replace />} />
           <Route path="/evaluations" element={<Navigate to="/" replace />} />
           <Route path="/benchmarks" element={<Navigate to="/domains" replace />} />
-          <Route path="/leaderboard/admin" element={<Navigate to="/docs" replace />} />
+          <Route path="/leaderboard/admin" element={<AdminLeaderboard />} />
           <Route path="/dataset/:name" element={<LegacyDatasetRedirect />} />
           <Route path="/leaderboard/:datasetId" element={<DatasetLeaderboard />} />
           <Route path="/docs" element={<Docs />} />

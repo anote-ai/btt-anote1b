@@ -4,7 +4,8 @@ Main FastAPI application for the Leaderboard API
 from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks, Request
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from typing import List, Optional
+from typing import List, Optional, Any
+import math
 import uuid
 from datetime import datetime
 
@@ -21,6 +22,40 @@ from evaluation_service import evaluate_submission
 from cache import cached_leaderboard, invalidate_leaderboard_cache, get_cache_stats
 from rate_limiter import setup_rate_limiting, RATE_LIMITS
 from logger import logger, log_api_request, log_evaluation, log_error
+
+
+def _is_finite_score(value: Any) -> bool:
+    """Reject None, NaN, and inf so Pydantic/JSON encoding cannot 500."""
+    try:
+        return math.isfinite(float(value))
+    except (TypeError, ValueError):
+        return False
+
+
+def _sanitize_detailed_scores(obj: Any) -> Any:
+    """Make nested structures JSON-safe (numpy scalars, NaN, weird keys)."""
+    if obj is None:
+        return None
+    if hasattr(obj, "item") and callable(getattr(obj, "item", None)):
+        try:
+            return _sanitize_detailed_scores(obj.item())
+        except Exception:
+            return None
+    if isinstance(obj, float):
+        if not math.isfinite(obj):
+            return None
+        return obj
+    if isinstance(obj, (int, str, bool)):
+        return obj
+    if isinstance(obj, dict):
+        return {str(k): _sanitize_detailed_scores(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [_sanitize_detailed_scores(v) for v in obj]
+    try:
+        return float(obj)
+    except (TypeError, ValueError):
+        return str(obj)
+
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -382,27 +417,29 @@ async def get_all_leaderboards(
             db.query(Submission)
             .filter(
                 Submission.dataset_id == dataset.id,
-                Submission.status == SubmissionStatus.COMPLETED
+                Submission.status == SubmissionStatus.COMPLETED,
+                Submission.primary_score.isnot(None),
             )
             .order_by(Submission.primary_score.desc())
             .all()
         )
-        
+        submissions = [s for s in submissions if _is_finite_score(s.primary_score)]
+
         entries = []
         for rank, sub in enumerate(submissions, start=1):
             # Format date
             updated_month = sub.evaluated_at.strftime("%b %Y") if sub.evaluated_at else "N/A"
-            
+
             # Create entry dict with detailed scores
             entry_data = {
                 "rank": rank,
                 "model_name": sub.model_name,
-                "score": sub.primary_score,
+                "score": float(sub.primary_score),
                 "confidence_interval": sub.confidence_interval,
                 "updated_at": updated_month,
                 "is_internal": sub.is_internal,
                 "submission_id": sub.id,
-                "detailed_scores": sub.detailed_scores,  # Add detailed scores
+                "detailed_scores": _sanitize_detailed_scores(sub.detailed_scores),
             }
             entries.append(entry_data)
         
@@ -410,10 +447,14 @@ async def get_all_leaderboards(
         # This ensures that newly imported benchmarks (e.g., from HuggingFace)
         # are visible in the frontend and can show "0 models" instead of
         # being entirely hidden.
+        try:
+            tt = dataset.task_type.value
+        except Exception:
+            tt = str(dataset.task_type)
         leaderboards.append(LeaderboardResponse(
             dataset_id=dataset.id,
             dataset_name=dataset.name,
-            task_type=dataset.task_type.value,
+            task_type=tt,
             url=dataset.url,
             primary_metric=dataset.primary_metric,
             entries=entries,
@@ -443,33 +484,39 @@ async def get_dataset_leaderboard(
     
     query = db.query(Submission).filter(
         Submission.dataset_id == dataset_id,
-        Submission.status == SubmissionStatus.COMPLETED
+        Submission.status == SubmissionStatus.COMPLETED,
+        Submission.primary_score.isnot(None),
     )
     
     if not include_internal:
         query = query.filter(Submission.is_internal == False)
     
     submissions = query.order_by(Submission.primary_score.desc()).all()
-    
+    submissions = [s for s in submissions if _is_finite_score(s.primary_score)]
+
     entries = []
     for rank, sub in enumerate(submissions, start=1):
         updated_month = sub.evaluated_at.strftime("%b %Y") if sub.evaluated_at else "N/A"
-        
+
         entries.append({
             "rank": rank,
             "model_name": sub.model_name,
-            "score": sub.primary_score,
+            "score": float(sub.primary_score),
             "confidence_interval": sub.confidence_interval,
             "updated_at": updated_month,
             "is_internal": sub.is_internal,
             "submission_id": sub.id,
-            "detailed_scores": sub.detailed_scores
+            "detailed_scores": _sanitize_detailed_scores(sub.detailed_scores),
         })
     
+    try:
+        tt = dataset.task_type.value
+    except Exception:
+        tt = str(dataset.task_type)
     return LeaderboardResponse(
         dataset_id=dataset.id,
         dataset_name=dataset.name,
-        task_type=dataset.task_type.value,
+        task_type=tt,
         url=dataset.url,
         primary_metric=dataset.primary_metric,
         entries=entries

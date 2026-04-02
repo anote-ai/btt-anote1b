@@ -22,7 +22,16 @@ const Home = () => {
       setLeaderboards(data);
       setActiveIndex(0);
     } catch (err) {
-      setError('Failed to load leaderboards. Make sure the API is running.');
+      const detail = err.response?.data?.detail;
+      const hint =
+        typeof detail === 'string'
+          ? detail
+          : err.response?.status
+            ? `HTTP ${err.response.status}`
+            : err.message || 'Network error';
+      setError(
+        `Failed to load leaderboards (${hint}). If the API is on another port, set VITE_API_URL in frontend/.env or align vite.config.js proxy target.`
+      );
     } finally {
       setLoading(false);
     }
