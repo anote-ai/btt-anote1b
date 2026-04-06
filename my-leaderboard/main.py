@@ -66,14 +66,40 @@ def _sanitize_detailed_scores(obj: Any) -> Any:
         return str(obj)
 
 
+# OpenAPI tags (used by /docs and /openapi.json)
+openapi_tags = [
+    {"name": "health", "description": "Liveness checks."},
+    {"name": "datasets", "description": "Datasets and test questions (without answers)."},
+    {"name": "submissions", "description": "Submit predictions, then poll for status and scores."},
+    {"name": "leaderboards", "description": "Leaderboards across datasets and per dataset."},
+    {"name": "metrics", "description": "Metric discovery and definitions."},
+    {"name": "admin", "description": "Seeding, imports, and cache operations."},
+    {"name": "auth", "description": "Identity probe for SPAs and CLIs."},
+]
+
 # Initialize FastAPI app
 app = FastAPI(
     title="Anote Leaderboard API",
-    description="API for managing benchmark datasets and model submissions",
+    description=(
+        "API for benchmark datasets and Kaggle-style prediction submissions.\n\n"
+        "## Quickstart\n"
+        "- List datasets: `GET /api/datasets`\n"
+        "- Get test questions (IDs + inputs): `GET /api/datasets/{dataset_id}/questions`\n"
+        "- Describe submission shape: `GET /api/datasets/{dataset_id}/submission-format`\n"
+        "- Submit predictions: `POST /api/submissions`\n"
+        "- Poll status/results: `GET /api/submissions/{submission_id}`\n"
+        "- View leaderboard: `GET /api/leaderboard` or `GET /api/leaderboard/{dataset_id}`\n\n"
+        "## Authentication\n"
+        "If auth is enabled server-side, send a Bearer token:\n\n"
+        "```\n"
+        "Authorization: Bearer <token>\n"
+        "```\n"
+    ),
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
     openapi_url="/openapi.json",
+    openapi_tags=openapi_tags,
     servers=[
         {"url": "http://localhost:8001", "description": "Local development server (alt port)"},
         {"url": "http://localhost:8000", "description": "Local development server"},
@@ -124,7 +150,7 @@ async def startup_event():
 
 # ==================== Dataset Endpoints ====================
 
-@app.post("/api/datasets", response_model=SuccessResponse, status_code=201)
+@app.post("/api/datasets", response_model=SuccessResponse, status_code=201, tags=["datasets"])
 async def create_dataset(
     request: Request,
     dataset: DatasetCreate,
@@ -168,7 +194,7 @@ async def create_dataset(
     )
 
 
-@app.get("/api/datasets", response_model=List[DatasetPublic])
+@app.get("/api/datasets", response_model=List[DatasetPublic], tags=["datasets"])
 async def list_datasets(
     task_type: Optional[str] = None,
     db: Session = Depends(get_db)
@@ -215,7 +241,7 @@ async def list_datasets(
     return result
 
 
-@app.get("/api/datasets/{dataset_id}", response_model=DatasetPublic)
+@app.get("/api/datasets/{dataset_id}", response_model=DatasetPublic, tags=["datasets"])
 async def get_dataset(
     dataset_id: str,
     db: Session = Depends(get_db)
@@ -246,7 +272,7 @@ async def get_dataset(
     )
 
 
-@app.get("/api/datasets/{dataset_id}/questions")
+@app.get("/api/datasets/{dataset_id}/questions", tags=["datasets"])
 async def get_dataset_questions(
     dataset_id: str,
     db: Session = Depends(get_db)
@@ -277,9 +303,58 @@ async def get_dataset_questions(
     }
 
 
+@app.get("/api/datasets/{dataset_id}/submission-format", tags=["datasets"])
+async def get_submission_format(dataset_id: str, db: Session = Depends(get_db)):
+    """
+    Describe the expected submission format for a dataset.
+
+    Intended for CLIs and external integrations to dynamically discover how to
+    structure `predictions` for `POST /api/submissions`.
+    """
+    dataset = db.query(Dataset).filter(Dataset.id == dataset_id).first()
+
+    if not dataset:
+        raise HTTPException(status_code=404, detail="Dataset not found")
+
+    task = dataset.task_type.value
+    if task == "text_classification":
+        prediction_shape = {"id": "string", "prediction": "string (label)"}
+        example_prediction = [{"id": "1", "prediction": "positive"}]
+    elif task == "named_entity_recognition":
+        prediction_shape = {"id": "string", "prediction": "list of [entity_text, entity_type] pairs"}
+        example_prediction = [{"id": "1", "prediction": [["Barack Obama", "PERSON"], ["Hawaii", "LOC"]]}]
+    elif task in {"document_qa", "line_qa"}:
+        prediction_shape = {"id": "string", "prediction": "string (answer text)"}
+        example_prediction = [{"id": "q1", "prediction": "Paris"}]
+    elif task == "retrieval":
+        prediction_shape = {"id": "string", "prediction": "list of doc ids (ranked best→worst)"}
+        example_prediction = [{"id": "q1", "prediction": ["doc7", "doc2", "doc9"]}]
+    else:
+        prediction_shape = {"id": "string", "prediction": "task-specific (see dataset.task_type)"}
+        example_prediction = [{"id": "1", "prediction": "…"}]
+
+    return {
+        "dataset_id": dataset.id,
+        "dataset_name": dataset.name,
+        "task_type": task,
+        "primary_metric": dataset.primary_metric,
+        "additional_metrics": dataset.additional_metrics or [],
+        "prediction_item_shape": prediction_shape,
+        "example": {
+            "dataset_id": dataset.id,
+            "model_name": "my-awesome-model",
+            "predictions": example_prediction,
+        },
+        "notes": [
+            "IDs must match those returned by GET /api/datasets/{dataset_id}/questions.",
+            "Do not include ground-truth answers in submissions; they are stored server-side.",
+        ],
+    }
+
+
 # ==================== Submission Endpoints ====================
 
-@app.post("/api/submissions", response_model=SuccessResponse, status_code=202)
+@app.post("/api/submissions", response_model=SuccessResponse, status_code=202, tags=["submissions"])
 @limiter.limit(RATE_LIMITS["submission"])
 async def submit_predictions(
     request: Request,
@@ -348,7 +423,7 @@ async def submit_predictions(
     )
 
 
-@app.get("/api/submissions/{submission_id}", response_model=SubmissionResponse)
+@app.get("/api/submissions/{submission_id}", response_model=SubmissionResponse, tags=["submissions"])
 async def get_submission_status(
     submission_id: str,
     db: Session = Depends(get_db)
@@ -380,7 +455,7 @@ async def get_submission_status(
     )
 
 
-@app.get("/api/submissions", response_model=List[SubmissionResponse])
+@app.get("/api/submissions", response_model=List[SubmissionResponse], tags=["submissions"])
 async def list_submissions(
     dataset_id: Optional[str] = None,
     model_name: Optional[str] = None,
@@ -424,7 +499,7 @@ async def list_submissions(
 
 # ==================== Leaderboard Endpoints ====================
 
-@app.get("/api/leaderboard", response_model=List[LeaderboardResponse])
+@app.get("/api/leaderboard", response_model=List[LeaderboardResponse], tags=["leaderboards"])
 @limiter.limit(RATE_LIMITS["leaderboard"])
 @cached_leaderboard
 async def get_all_leaderboards(
@@ -501,7 +576,7 @@ async def get_all_leaderboards(
     return leaderboards
 
 
-@app.get("/api/leaderboard/{dataset_id}", response_model=LeaderboardResponse)
+@app.get("/api/leaderboard/{dataset_id}", response_model=LeaderboardResponse, tags=["leaderboards"])
 @limiter.limit(RATE_LIMITS["leaderboard"])
 @cached_leaderboard
 async def get_dataset_leaderboard(
@@ -563,7 +638,7 @@ async def get_dataset_leaderboard(
 
 # ==================== Data Management ====================
 
-@app.post("/api/admin/seed-data", response_model=SuccessResponse)
+@app.post("/api/admin/seed-data", response_model=SuccessResponse, tags=["admin"])
 @limiter.limit(RATE_LIMITS["admin"])
 async def seed_sample_data(
     request: Request,
@@ -647,7 +722,7 @@ async def seed_sample_data(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/api/admin/import-huggingface", response_model=SuccessResponse)
+@app.post("/api/admin/import-huggingface", response_model=SuccessResponse, tags=["admin"])
 @limiter.limit(RATE_LIMITS["admin"])
 async def import_from_huggingface(
     request: Request,
@@ -719,14 +794,14 @@ async def import_from_huggingface(
 
 # ==================== Metrics Information ====================
 
-@app.get("/api/metrics")
+@app.get("/api/metrics", tags=["metrics"])
 async def get_all_metrics():
     """Get information about all available metrics"""
     from metrics_info import METRICS_CATALOG
     return METRICS_CATALOG
 
 
-@app.get("/api/metrics/{metric_name}")
+@app.get("/api/metrics/{metric_name}", tags=["metrics"])
 async def get_metric_info(metric_name: str):
     """Get detailed information about a specific metric"""
     from metrics_info import get_metric_info as get_info
@@ -736,7 +811,7 @@ async def get_metric_info(metric_name: str):
     return info
 
 
-@app.get("/api/metrics/task/{task_type}")
+@app.get("/api/metrics/task/{task_type}", tags=["metrics"])
 async def get_task_metrics(task_type: str):
     """Get all relevant metrics for a specific task type"""
     from metrics_info import get_metrics_for_task, get_metric_info as get_info
@@ -748,7 +823,7 @@ async def get_task_metrics(task_type: str):
 
 # ==================== Health Check & Monitoring ====================
 
-@app.get("/api/me", response_model=MeResponse)
+@app.get("/api/me", response_model=MeResponse, tags=["auth"])
 async def api_me(request: Request):
     """Who is calling (Anote JWT, Google ID token, introspect, or cookies)."""
     mode = auth_mode()
@@ -763,13 +838,13 @@ async def api_me(request: Request):
     return MeResponse(authenticated=False, auth_mode=mode)
 
 
-@app.get("/health")
+@app.get("/health", tags=["health"])
 async def health_check():
     """Health check endpoint"""
     return {"status": "healthy", "service": "leaderboard-api"}
 
 
-@app.get("/api/admin/cache-stats")
+@app.get("/api/admin/cache-stats", tags=["admin"])
 @limiter.limit(RATE_LIMITS["admin"])
 async def get_cache_statistics(
     request: Request,
@@ -779,7 +854,7 @@ async def get_cache_statistics(
     return get_cache_stats()
 
 
-@app.post("/api/admin/clear-cache")
+@app.post("/api/admin/clear-cache", tags=["admin"])
 @limiter.limit(RATE_LIMITS["admin"])
 async def clear_cache(
     request: Request,

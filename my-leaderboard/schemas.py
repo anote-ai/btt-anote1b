@@ -10,14 +10,38 @@ from models import TaskType, SubmissionStatus
 # Dataset schemas
 class DatasetCreate(BaseModel):
     """Schema for creating a new dataset"""
-    name: str = Field(..., description="Unique name for the dataset")
-    description: Optional[str] = Field(None, description="Description of the dataset")
-    url: Optional[str] = Field(None, description="Link to dataset source")
-    task_type: str = Field(..., description="Type of task (text_classification, ner, document_qa, line_qa, retrieval)")
+    name: str = Field(
+        ...,
+        description="Unique name for the dataset",
+        json_schema_extra={"example": "SST-2 - Sentiment Analysis"},
+    )
+    description: Optional[str] = Field(
+        None,
+        description="Description of the dataset",
+        json_schema_extra={"example": "Stanford Sentiment Treebank - Binary sentiment classification (positive/negative)"},
+    )
+    url: Optional[str] = Field(
+        None,
+        description="Link to dataset source",
+        json_schema_extra={"example": "https://huggingface.co/datasets/stanfordnlp/sst2"},
+    )
+    task_type: str = Field(
+        ...,
+        description="Type of task (text_classification, named_entity_recognition, document_qa, line_qa, retrieval)",
+        json_schema_extra={"example": "text_classification"},
+    )
     test_set_public: bool = Field(False, description="Whether test questions are publicly accessible")
     labels_public: bool = Field(False, description="Whether ground truth labels are public")
-    primary_metric: str = Field(..., description="Primary metric for ranking (e.g., accuracy, f1)")
-    additional_metrics: List[str] = Field(default_factory=list, description="Additional metrics to compute")
+    primary_metric: str = Field(
+        ...,
+        description="Primary metric for ranking (e.g., accuracy, f1, exact_match, mrr)",
+        json_schema_extra={"example": "accuracy"},
+    )
+    additional_metrics: List[str] = Field(
+        default_factory=list,
+        description="Additional metrics to compute",
+        json_schema_extra={"example": ["f1", "precision", "recall"]},
+    )
     num_examples: Optional[int] = Field(None, description="Number of examples in dataset")
     ground_truth: List[Dict[str, Any]] = Field(..., description="Ground truth data")
     
@@ -68,11 +92,30 @@ class DatasetPublic(BaseModel):
 # Submission schemas
 class SubmissionCreate(BaseModel):
     """Schema for creating a new submission"""
-    dataset_id: str = Field(..., description="ID of the dataset")
-    model_name: str = Field(..., description="Name of the model")
+    dataset_id: str = Field(
+        ...,
+        description="ID of the dataset",
+        json_schema_extra={"example": "b9f2b2a8-4a6a-4c2d-9b53-6c0f9c2db2c3"},
+    )
+    model_name: str = Field(
+        ...,
+        description="Name of the model",
+        json_schema_extra={"example": "my-awesome-model"},
+    )
     model_version: Optional[str] = Field(None, description="Version of the model")
     organization: Optional[str] = Field(None, description="Organization submitting the model")
-    predictions: List[Dict[str, Any]] = Field(..., description="Model predictions")
+    predictions: List[Dict[str, Any]] = Field(
+        ...,
+        description=(
+            "Model predictions. Each item must include `id` and `prediction`.\n\n"
+            "Examples:\n"
+            "- Classification: `{id: '1', prediction: 'positive'}`\n"
+            "- QA: `{id: 'q1', prediction: 'Paris'}`\n"
+            "- Retrieval: `{id: 'q1', prediction: ['doc7','doc2','doc9']}`\n"
+            "- NER: `{id: 'q1', prediction: [['Barack Obama','PERSON'], ['Hawaii','LOC']]}`"
+        ),
+        json_schema_extra={"example": [{"id": "1", "prediction": "positive"}]},
+    )
     is_internal: bool = Field(False, description="Whether this is an internal submission")
     submission_metadata: Optional[Dict[str, Any]] = Field(None, description="Additional metadata")
     
