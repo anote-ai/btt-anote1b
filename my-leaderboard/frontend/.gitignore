@@ -5,8 +5,10 @@ node_modules/
 dist/
 build/
 
-# Environment
+# Environment (use .env.example as template; commit that, not .env)
 .env
+.env.*
+!.env.example
 .env.local
 .env.production
 

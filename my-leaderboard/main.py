@@ -17,6 +17,7 @@ from auth import (
     require_write_user,
     resolve_user,
 )
+import database as database_module
 from database import get_db, init_db
 from models import Dataset, Submission, LeaderboardEntry, TaskType, SubmissionStatus
 from schemas import (
@@ -84,6 +85,13 @@ app = FastAPI(
 _cors_origins = (os.getenv("LEADERBOARD_CORS_ORIGINS") or "").strip()
 if _cors_origins:
     _cors_list = [o.strip() for o in _cors_origins.split(",") if o.strip()]
+    if not any(
+        "localhost" in o or "127.0.0.1" in o for o in _cors_list
+    ):
+        logger.warning(
+            "LEADERBOARD_CORS_ORIGINS has no localhost — add http://localhost:3000 for Vite dev or the "
+            "browser will block API calls."
+        )
     app.add_middleware(
         CORSMiddleware,
         allow_origins=_cors_list,
@@ -108,6 +116,7 @@ limiter = setup_rate_limiting(app)
 async def startup_event():
     """Initialize database on startup"""
     init_db()
+    logger.info("Database URL: %s", database_module.DATABASE_URL)
     log_auth_config()
     logger.info("Leaderboard API started successfully")
     print("Leaderboard API started successfully")
@@ -741,19 +750,17 @@ async def get_task_metrics(task_type: str):
 
 @app.get("/api/me", response_model=MeResponse)
 async def api_me(request: Request):
-    """Who is calling (JWT / session validated like OpenAnote)."""
+    """Who is calling (Anote JWT, Google ID token, introspect, or cookies)."""
     mode = auth_mode()
-    if mode != "jwt":
-        return MeResponse(authenticated=False, auth_mode=mode)
     user = resolve_user(request)
-    if not user:
-        return MeResponse(authenticated=False, auth_mode=mode)
-    return MeResponse(
-        authenticated=True,
-        auth_mode=mode,
-        sub=user.sub,
-        email=user.email,
-    )
+    if user and (user.sub or user.email):
+        return MeResponse(
+            authenticated=True,
+            auth_mode=mode,
+            sub=user.sub,
+            email=user.email,
+        )
+    return MeResponse(authenticated=False, auth_mode=mode)
 
 
 @app.get("/health")

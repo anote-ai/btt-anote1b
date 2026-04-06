@@ -2,42 +2,26 @@
 Shared pytest fixtures for all tests
 """
 import os
+from pathlib import Path
 
-# Keep integration tests unauthenticated unless a test sets LEADERBOARD_AUTH_MODE explicitly.
+# Before importing database: isolated test DB + auth default
 os.environ.setdefault("LEADERBOARD_AUTH_MODE", "off")
+_test_db = Path(__file__).resolve().parent / "test_leaderboard.db"
+os.environ["DATABASE_URL"] = f"sqlite:///{_test_db.as_posix()}"
 
 import pytest
-from database import SessionLocal, init_db
-from models import Base, Dataset, Submission
-from sqlalchemy import create_engine
-import os
+from sqlalchemy.orm import Session
 
-# Use test database for isolation
-TEST_DB_URL = os.getenv("TEST_DATABASE_URL", "sqlite:///./test_leaderboard.db")
-test_engine = create_engine(
-    TEST_DB_URL,
-    connect_args={"check_same_thread": False} if "sqlite" in TEST_DB_URL else {},
-)
+from database import SessionLocal, engine
+from models import Base, Dataset, Submission
+
 
 @pytest.fixture(scope="function", autouse=True)
 def clean_db():
-    """Clean database before each test"""
-    # Ensure tables exist
-    Base.metadata.create_all(bind=test_engine)
-    
-    # Clean up any existing data
-    db = SessionLocal()
-    try:
-        db.query(Submission).delete()
-        db.query(Dataset).delete()
-        db.commit()
-    finally:
-        db.close()
-    
-    yield
-    
-    # Cleanup after test
-    db = SessionLocal()
+    """Clean database before each test (same engine as the FastAPI app)."""
+    Base.metadata.create_all(bind=engine)
+
+    db: Session = SessionLocal()
     try:
         db.query(Submission).delete()
         db.query(Dataset).delete()
@@ -45,3 +29,12 @@ def clean_db():
     finally:
         db.close()
 
+    yield
+
+    db = SessionLocal()
+    try:
+        db.query(Submission).delete()
+        db.query(Dataset).delete()
+        db.commit()
+    finally:
+        db.close()

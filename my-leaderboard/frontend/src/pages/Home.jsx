@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { getAllLeaderboards } from '../services/api';
 import LeaderboardCard from '../components/LeaderboardCard';
 
@@ -66,6 +67,14 @@ const Home = () => {
       <p className="text-gray-400 mb-4 text-center max-w-2xl">
         Transparent benchmarking platform for AI models across multiple task types
       </p>
+      <div className="flex flex-wrap gap-3 justify-center mb-6">
+        <Link
+          to="/login"
+          className="inline-flex items-center px-4 py-2 rounded-md text-sm font-medium text-blue-200 bg-blue-950/50 border border-blue-800/70 hover:bg-blue-900/40 hover:border-blue-600 transition-colors"
+        >
+          Log in
+        </Link>
+      </div>
 
       {/* Summary ribbon */}
       {!loading && !error && leaderboards.length > 0 && (
@@ -294,9 +303,35 @@ const Home = () => {
       {!loading && !error && (
         <>
           {leaderboards.length === 0 ? (
-            <div className="text-center text-gray-400 p-8">
-              <p className="text-xl mb-4">No leaderboards found</p>
-              <p className="text-sm">Create a dataset to get started!</p>
+            <div className="text-center text-gray-400 p-8 max-w-xl mx-auto space-y-4">
+              <p className="text-xl text-white font-medium">No leaderboards yet</p>
+              <p className="text-sm leading-relaxed">
+                The API answered successfully, but this database has no datasets. The app now always uses{' '}
+                <code className="text-gray-300 bg-gray-800 px-1 rounded">my-leaderboard/leaderboard.db</code>{' '}
+                (not “whatever folder you ran uvicorn from”), so an older DB elsewhere is not read unless you set{' '}
+                <code className="text-gray-300 bg-gray-800 px-1 rounded">DATABASE_URL</code> or copy your file into
+                that path.
+              </p>
+              <div className="flex flex-wrap gap-3 justify-center pt-2">
+                <Link
+                  to="/leaderboard/admin"
+                  className="inline-flex items-center px-4 py-2 rounded-md text-sm font-medium text-white bg-indigo-700 hover:bg-indigo-600 border border-indigo-500/50"
+                >
+                  Admin — load sample data
+                </Link>
+                <Link
+                  to="/login"
+                  className="inline-flex items-center px-4 py-2 rounded-md text-sm font-medium text-blue-200 border border-blue-800/70 hover:bg-blue-950/50"
+                >
+                  Log in
+                </Link>
+                <Link
+                  to="/create-dataset"
+                  className="inline-flex items-center px-4 py-2 rounded-md text-sm font-medium text-gray-200 border border-gray-600 hover:bg-gray-800"
+                >
+                  Create dataset
+                </Link>
+              </div>
             </div>
           ) : layoutMode === 'list' ? (
             <div className="flex flex-col space-y-8 w-full max-w-[95%]">

@@ -14,6 +14,7 @@ Env:
 - ANOTE_JWT_AUDIENCE, ANOTE_JWT_ISSUER: optional
 - ANOTE_AUTH_COOKIE_NAMES: e.g. "access_token_cookie" (comma-separated)
 - ANOTE_TOKEN_POST_URL + ANOTE_INTROSPECT_TOKEN_FIELD: forward token to Anote (see resolve_user)
+- GOOGLE_OAUTH_CLIENT_ID: verify Google Sign-In ID tokens (same Web client ID as VITE_GOOGLE_CLIENT_ID)
 """
 from __future__ import annotations
 
@@ -23,6 +24,8 @@ from typing import Any, Dict, Optional
 
 import jwt
 import requests
+from google.auth.transport import requests as google_auth_requests
+from google.oauth2 import id_token as google_id_token
 from fastapi import HTTPException, Request
 from pydantic import BaseModel, ConfigDict
 
@@ -73,6 +76,26 @@ def extract_raw_token(request: Request) -> Optional[str]:
             if val:
                 return val
     return None
+
+
+def _google_oauth_client_id() -> Optional[str]:
+    return (os.getenv("GOOGLE_OAUTH_CLIENT_ID") or "").strip() or None
+
+
+def _verify_google_id_token(token: str) -> Optional[Dict[str, Any]]:
+    """Validate GIS credential JWT; audience must match the OAuth Web client ID."""
+    cid = _google_oauth_client_id()
+    if not cid:
+        return None
+    try:
+        info = google_id_token.verify_oauth2_token(
+            token, google_auth_requests.Request(), cid
+        )
+        if not isinstance(info, dict):
+            return None
+        return dict(info)
+    except ValueError:
+        return None
 
 
 def _decode_jwt(token: str) -> Optional[Dict[str, Any]]:
@@ -141,6 +164,9 @@ def resolve_user(request: Request) -> Optional[AuthUser]:
     jwt_claims = _decode_jwt(token)
     if jwt_claims:
         return claims_to_user(jwt_claims)
+    google_claims = _verify_google_id_token(token)
+    if google_claims:
+        return claims_to_user(google_claims)
     intro = _introspect_remote(token)
     if intro:
         return claims_to_user(intro)
@@ -163,17 +189,19 @@ def log_auth_config() -> None:
     mode = auth_mode()
     has_secret = bool(_jwt_secret())
     has_intro = bool((os.getenv("ANOTE_TOKEN_INTROSPECT_URL") or "").strip())
+    has_google = bool(_google_oauth_client_id())
     cookies = (os.getenv("ANOTE_AUTH_COOKIE_NAMES") or "").strip()
     if mode == "jwt":
-        if not has_secret and not has_intro:
+        if not has_secret and not has_intro and not has_google:
             logger.warning(
-                "LEADERBOARD_AUTH_MODE=jwt but neither ANOTE_JWT_SECRET/JWT_SECRET_KEY nor "
-                "ANOTE_TOKEN_INTROSPECT_URL is set — write routes will return 401."
+                "LEADERBOARD_AUTH_MODE=jwt but no ANOTE_JWT_SECRET/JWT_SECRET_KEY, "
+                "ANOTE_TOKEN_INTROSPECT_URL, or GOOGLE_OAUTH_CLIENT_ID — write routes will return 401."
             )
         logger.info(
-            "Auth: mode=jwt jwt_secret=%s introspect=%s cookies=%s",
+            "Auth: mode=jwt jwt_secret=%s introspect=%s google_oidc=%s cookies=%s",
             "set" if has_secret else "off",
             "set" if has_intro else "off",
+            "set" if has_google else "off",
             cookies or "off",
         )
     else:

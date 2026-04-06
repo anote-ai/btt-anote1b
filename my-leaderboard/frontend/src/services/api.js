@@ -14,6 +14,30 @@ export function getApiBaseUrl() {
   return 'http://localhost:8000'.replace(/\/$/, '');
 }
 
+/**
+ * Optional external “open app” link. Default: none (use /login + Google on this site).
+ * Set VITE_ANOTE_SIGNIN_URL only if you want an extra nav/footer link.
+ */
+export function getAnoteSignInUrl() {
+  const raw = import.meta.env.VITE_ANOTE_SIGNIN_URL;
+  if (raw === '0' || raw === 'false') return null;
+  const trimmed = typeof raw === 'string' ? raw.trim() : '';
+  if (!trimmed) return null;
+  return trimmed.replace(/\/$/, '');
+}
+
+/**
+ * Google Web client ID for GIS. Accepts either Vite name (some setups used
+ * VITE_GOOGLE_OAUTH_CLIENT_ID to mirror the backend env name).
+ */
+export function getGoogleWebClientId() {
+  const a = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const b = import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_ID;
+  const s =
+    (typeof a === 'string' && a.trim()) || (typeof b === 'string' && b.trim());
+  return s ? String(s).trim() : '';
+}
+
 const API_BASE_URL = getApiBaseUrl();
 
 const api = axios.create({
@@ -26,8 +50,11 @@ const api = axios.create({
 
 api.interceptors.request.use((config) => {
   if (typeof localStorage === 'undefined') return config;
+  // Anote app tokens first; Google GIS credential (ID JWT) if present
   const token =
-    localStorage.getItem('accessToken') || localStorage.getItem('sessionToken');
+    localStorage.getItem('accessToken') ||
+    localStorage.getItem('sessionToken') ||
+    localStorage.getItem('googleIdToken');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

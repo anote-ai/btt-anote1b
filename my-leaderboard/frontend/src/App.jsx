@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import Home from './pages/Home';
 import CreateDataset from './pages/CreateDataset';
@@ -9,26 +9,31 @@ import DatasetLeaderboard from './pages/DatasetLeaderboard';
 import LegacyDatasetRedirect from './pages/LegacyDatasetRedirect';
 import AdminLeaderboard from './pages/AdminLeaderboard';
 import Docs from './pages/Docs';
-import { getApiBaseUrl, getMe } from './services/api';
+import Login from './pages/Login';
+import NavAuth from './components/NavAuth';
+import { getApiBaseUrl, getAnoteSignInUrl, getMe } from './services/api';
 
 const API_BASE_URL = getApiBaseUrl();
+const ANOTE_SIGNIN_URL = getAnoteSignInUrl();
 
 function App() {
   const [me, setMe] = useState(null);
 
-  useEffect(() => {
-    let cancelled = false;
+  const loadMe = useCallback(() => {
     getMe()
-      .then((data) => {
-        if (!cancelled) setMe(data);
-      })
-      .catch(() => {
-        if (!cancelled) setMe({ authenticated: false, auth_mode: 'unknown' });
-      });
-    return () => {
-      cancelled = true;
-    };
+      .then(setMe)
+      .catch(() => setMe({ authenticated: false, auth_mode: 'unknown' }));
   }, []);
+
+  useEffect(() => {
+    loadMe();
+  }, [loadMe]);
+
+  useEffect(() => {
+    const onAuth = () => loadMe();
+    window.addEventListener('leaderboard-auth-changed', onAuth);
+    return () => window.removeEventListener('leaderboard-auth-changed', onAuth);
+  }, [loadMe]);
 
   return (
     <Router>
@@ -79,20 +84,37 @@ function App() {
                 >
                   Admin
                 </Link>
+                <NavAuth />
                 <Link
                   to="/submit"
                   className="btn-black px-4 py-2 rounded-md text-sm font-medium"
                 >
                   Submit Model
                 </Link>
-                {me?.auth_mode === 'jwt' && (
+                {ANOTE_SIGNIN_URL && (
+                  <a
+                    href={ANOTE_SIGNIN_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hidden sm:inline-flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-400 hover:text-white border border-gray-700"
+                  >
+                    Open app
+                  </a>
+                )}
+                {(me?.authenticated || me?.auth_mode === 'jwt') && (
                   <span
-                    className="hidden lg:inline-block max-w-[10rem] truncate text-xs text-gray-500"
-                    title={me.authenticated ? me.email || me.sub || '' : 'Sign in via Anote'}
+                    className="hidden lg:inline-block max-w-[12rem] truncate text-xs text-gray-500"
+                    title={
+                      me.authenticated
+                        ? me.email || me.sub || ''
+                        : 'Use Log in to sign in with Google'
+                    }
                   >
                     {me.authenticated
                       ? me.email || me.sub || 'Signed in'
-                      : 'Anote: not signed in'}
+                      : me.auth_mode === 'jwt'
+                        ? 'Not signed in'
+                        : ''}
                   </span>
                 )}
               </div>
@@ -102,6 +124,7 @@ function App() {
 
         {/* Main Content */}
         <Routes>
+          <Route path="/login" element={<Login me={me} />} />
           <Route path="/" element={<Home />} />
           <Route path="/domains" element={<DomainBenchmarks />} />
           <Route path="/create-dataset" element={<CreateDataset />} />
@@ -123,6 +146,23 @@ function App() {
           <div className="max-w-7xl mx-auto px-4 py-6 text-center text-gray-400 text-sm">
             <p className="mb-2">
               Built by <a href="https://anote.ai" className="text-blue-400 hover:text-blue-300 font-medium">Anote</a>
+              {' · '}
+              <Link to="/login" className="text-blue-400 hover:text-blue-300">
+                Log in
+              </Link>
+              {ANOTE_SIGNIN_URL && (
+                <>
+                  {' · '}
+                  <a
+                    href={ANOTE_SIGNIN_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-400 hover:text-blue-300"
+                  >
+                    Open app
+                  </a>
+                </>
+              )}
             </p>
             <p>
               <Link 
