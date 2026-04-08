@@ -1,12 +1,92 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { submittoleaderboardPath } from "../../constants/RouteConstants";
 import { useNavigate } from "react-router-dom";
 
+// API Base URL
+const API_BASE_URL = "http://localhost:5000/api/leaderboard";
+
 const Leaderboard = () => {
   const [openIndex, setOpenIndex] = useState(null);
+  const [showTestForm, setShowTestForm] = useState(false);
+  const [apiResponse, setApiResponse] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleClick = (index) => {
     setOpenIndex(openIndex === index ? null : index);
+  };
+
+  // API Functions
+  const addDataset = async (datasetData) => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE_URL}/add_dataset`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(datasetData),
+      });
+      const result = await response.json();
+      setApiResponse(result);
+      return result;
+    } catch (error) {
+      setApiResponse({ status: 'error', message: error.message });
+      return { status: 'error', message: error.message };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const addModel = async (modelData) => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE_URL}/add_model`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(modelData),
+      });
+      const result = await response.json();
+      setApiResponse(result);
+      return result;
+    } catch (error) {
+      setApiResponse({ status: 'error', message: error.message });
+      return { status: 'error', message: error.message };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Test Functions
+  const testAddDataset = () => {
+    const testData = {
+      name: "Test Dataset - Classification",
+      url: "https://example.com/test-dataset",
+      task_type: "text_classification",
+      description: "A test dataset for classification tasks",
+      models: [
+        {
+          rank: 1,
+          model: "Test Model 1",
+          score: 0.95,
+          ci: "0.93 - 0.97",
+          updated: "Dec 2024"
+        }
+      ]
+    };
+    addDataset(testData);
+  };
+
+  const testAddModel = () => {
+    const testData = {
+      dataset_name: "Test Dataset - Classification",
+      model: "Test Model 2",
+      score: 0.92,
+      ci: "0.90 - 0.94",
+      updated: "Dec 2024"
+    };
+    addModel(testData);
   };
 
   const faqs = [
@@ -972,6 +1052,90 @@ const Leaderboard = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 pb-20 mx-3">
       <h1 className="text-4xl font-bold text-white mb-4 mt-8">LLM Leaderboards</h1>
+      
+      {/* API Test Section */}
+      <div className="bg-gray-800 p-6 rounded-lg mb-8 w-full max-w-4xl">
+        <h2 className="text-2xl font-bold text-white mb-4">🧪 API Test Panel</h2>
+        
+        <div className="flex gap-4 mb-4">
+          <button
+            onClick={testAddDataset}
+            disabled={loading}
+            className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white px-4 py-2 rounded-md font-semibold transition-colors"
+          >
+            {loading ? "Loading..." : "Test Add Dataset"}
+          </button>
+          
+          <button
+            onClick={testAddModel}
+            disabled={loading}
+            className="bg-green-600 hover:bg-green-700 disabled:bg-gray-600 text-white px-4 py-2 rounded-md font-semibold transition-colors"
+          >
+            {loading ? "Loading..." : "Test Add Model"}
+          </button>
+          
+          <button
+            onClick={() => setShowTestForm(!showTestForm)}
+            className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md font-semibold transition-colors"
+          >
+            {showTestForm ? "Hide" : "Show"} Custom Form
+          </button>
+        </div>
+
+        {/* API Response Display */}
+        {apiResponse && (
+          <div className="bg-gray-700 p-4 rounded-md mb-4">
+            <h3 className="text-lg font-semibold text-white mb-2">API Response:</h3>
+            <pre className="text-green-400 text-sm overflow-auto">
+              {JSON.stringify(apiResponse, null, 2)}
+            </pre>
+          </div>
+        )}
+
+        {/* Custom Test Form */}
+        {showTestForm && (
+          <div className="bg-gray-700 p-4 rounded-md">
+            <h3 className="text-lg font-semibold text-white mb-4">Custom Test Form</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <h4 className="text-white font-medium mb-2">Add Dataset:</h4>
+                <button
+                  onClick={() => {
+                    const customData = {
+                      name: "Custom Dataset - " + Date.now(),
+                      url: "https://example.com/custom",
+                      task_type: "text_classification",
+                      description: "Custom test dataset"
+                    };
+                    addDataset(customData);
+                  }}
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
+                >
+                  Add Custom Dataset
+                </button>
+              </div>
+              <div>
+                <h4 className="text-white font-medium mb-2">Add Model:</h4>
+                <button
+                  onClick={() => {
+                    const customData = {
+                      dataset_name: "Custom Dataset - " + Date.now(),
+                      model: "Custom Model - " + Date.now(),
+                      score: Math.random() * 0.5 + 0.5, // Random score between 0.5-1.0
+                      updated: new Date().toISOString().split('T')[0]
+                    };
+                    addModel(customData);
+                  }}
+                  className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm"
+                >
+                  Add Custom Model
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
       <button
         className="btn-black px-6 py-2 mb-8 rounded-md text-lg font-semibold transition-colors"
         // onClick={() => {navigate(submittoleaderboardPath);}}
