@@ -1,0 +1,91 @@
+.TutorialsContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 24px;
+
+    position: absolute;
+    width: 1101.97px;
+    height: 361px;
+    left: 98px;
+    top: 203px;
+}
+
+.TutorialsVideoBox {
+    box-sizing: border-box;
+
+    position: absolute;
+    left: 0%;
+    right: 0.28%;
+    top: 0.54%;
+    bottom: 0%;
+
+    /* Yellow */
+
+    border: 1px solid #DEFE47;
+    border-radius: 8px;
+}
+
+.LP-TutorialContainer{
+    color: white;
+    background: black;
+}
+
+
+.LP-TutorialView{
+    color: white;
+    background: black;
+    /*background-image: url('../assets/lp-background.png');*/
+    min-height: 2000vh;
+    padding-top: 20vh;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+    overflow: hidden;
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Do not repeat the image */
+    background-size: cover; /* Resize the background image to cover the entire container */
+}
+
+.sectionTitle {
+    /* Video tutorial */
+
+    font-family: 'Helvetica Neue';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 39px;
+    /* identical to box height */
+
+    /* White */
+
+    color: #FFFFFF;
+}
+
+.TutorialsVideo {
+    position: absolute;
+    left: 0%;
+    right: -0.28%;
+    top: -0.54%;
+    bottom: 18.87%;
+    background: #5F7389;
+}
+
+.TutorialsDescription {
+    position: absolute;
+    width: 173px;
+    height: 29px;
+    left: 8px;
+    top: 310px;
+
+    /* Section subtitle */
+
+    font-family: 'Helvetica Neue';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 29px;
+
+    color: #FFFFFF;
+}

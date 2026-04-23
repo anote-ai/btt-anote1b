@@ -1,0 +1,58 @@
+.LP-LinkedinBody{
+    display: flex;
+    flex-direction: row;
+    margin-top: 8vh;
+    margin-left: 2.5vh;
+    color: white;
+}
+.LP-Linkedin-Section1{
+    flex: 1;
+    flex-basis: 0.8%;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+}
+.LP-Linkedin-Circle{
+    background-color: #FFFFFF;
+    border-radius: 50%;
+    width: 60%;
+    height: 14vh;
+    margin: 2vh 3vw
+}
+.LP-Linkedin-Section2{
+    flex: 2;
+    flex-basis: 10%;
+    justify-content: left;
+    line-height: 1.5;
+    /* margin-left: 3vw; */
+    color: white;
+    padding-right: 10%;
+    margin-left: 2vw;
+}
+.LP-Linkedin-Section3{
+    flex: 3;
+    margin-top: 2vh;
+}
+.imageSababa{
+    width: 90%;
+    height: 100%;
+    object-fit: contain;
+    margin-top: -5vh;
+}
+.vertical-line-long {
+    border-left: 2px solid #777; /* Change color as needed */
+    padding-left: 3vw;
+    height: 85vh;
+  }
+  .LP-Linkedin-Section2-person{
+    display: flex;
+    flex-direction: row;
+  }
+  .LP-Linkedin-Section2-Description-Image{
+    flex: 1;
+    flex-basis: 5%;
+    max-width: 10vw;
+  }
+  .LP-Linkedin-Section2-Description-Text{
+    flex: 2;
+  }

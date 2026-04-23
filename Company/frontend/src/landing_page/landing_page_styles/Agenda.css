@@ -1,0 +1,142 @@
+/* .agenda-container {
+  margin: 20px;
+}
+
+.agenda-container h2 {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.agenda-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.agenda-table th,
+.agenda-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.agenda-table th {
+  background-color: #111827;
+  color: #defe47;
+}
+
+.agenda-table tr:nth-child(even) {
+  background-color: #1f2937;
+}
+
+.agenda-table a {
+  color: #28b2fb;
+  text-decoration: underline;
+} */
+
+.agenda-container {
+  margin: 20px;
+  overflow-x: auto; /* Add horizontal scrolling for smaller screens */
+  position: relative; /* Add relative positioning */
+}
+
+/* Ensure that fixed elements (navbar and footer) are visible on scroll */
+body {
+  overflow-x: hidden;
+}
+
+/* Add a pseudo-element to create a placeholder for fixed elements */
+.agenda-container::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 60px; /* Adjust the height based on your navbar's height */
+}
+
+.agenda-container h2 {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.agenda-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.agenda-table th,
+.agenda-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.agenda-table th {
+  background-color: #111827;
+  color: #defe47;
+}
+
+.agenda-table tr:nth-child(even) {
+  background-color: #1f2937;
+}
+
+.agenda-table a {
+  color: #28b2fb; /* Link color */
+  text-decoration: underline; /* Underline for links */
+}
+
+/* Add media query to limit table width on smaller screens */
+@media (max-width: 768px) {
+  .agenda-container {
+    overflow-x: scroll; /* Add horizontal scrolling for smaller screens */
+  }
+  .agenda-table {
+    max-width: 100%; /* Limit the maximum width of the entire table */
+  }
+  .agenda-table th,
+  .agenda-table td {
+    max-width: 150px; /* Limit the maximum width of table cells */
+    white-space: nowrap; /* Prevent text from wrapping */
+    overflow: hidden; /* Hide overflow text */
+    text-overflow: ellipsis; /* Show ellipsis for overflow text */
+  }
+}
+
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none;
+  }
+}
+
+
+.LP-SubTitle {
+  /* Body text regular */
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 24px;
+  /* or 133% */
+
+
+  /* White */
+
+  color: #FFFFFF;
+}
+
+.LP-Text h6 {
+  line-height: 30px;
+}
+
+.LP-SubHeader {
+  /* Body text regular */
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 24px;
+  /* or 133% */
+
+
+  /* White */
+
+  color: #DEFE47;;
+}

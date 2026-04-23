@@ -1,0 +1,48 @@
+.sectionContainer {
+    color: white;
+    background: black;
+}
+
+.sectionTitle {
+    /* Section title */
+
+    font-family: 'Helvetica Neue';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 39px;
+    /* identical to box height */
+
+
+    color: #FFFFFF;
+}
+
+.sectionSubHeader {
+    /* Section subtitle */
+
+    font-family: 'Helvetica Neue';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 29px;
+
+    /* White */
+
+    color: #FFFFFF;
+}
+
+.sectionParagraph {
+    /* Body text regular */
+
+    font-family: 'Helvetica Neue';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 24px;
+    /* or 133% */
+
+
+    /* White */
+
+    color: #FFFFFF;
+}

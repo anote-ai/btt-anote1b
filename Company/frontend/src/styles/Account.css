@@ -1,0 +1,103 @@
+.InnerAccountView {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    height: 500px;
+    color: white;
+}
+
+.LeftAccountView {
+    background-color: #3D4449;
+    height: 500px;
+}
+
+.LeftAccountView ul {
+    list-style: none;
+    text-align: left;
+}
+
+.RightAccountView {
+    height: 500px;
+}
+
+.AccountView {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    color: #fff;
+    background-color: #181a1b;
+}
+
+.AccountDetails {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.UserInfo {
+    box-shadow: 0px 0px 5px 0px rgba(255,255,255,0.2);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    background-color: #2c2f30;
+}
+
+.BillingInfo {
+    box-shadow: 0px 0px 5px 0px rgba(255,255,255,0.2);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    background-color: #2c2f30;
+}
+
+h1, h2 {
+    color: #eee;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+table {
+    color: #ddd;
+    margin-bottom: 10px;
+}
+
+body-font {
+    color: #ddd;
+}
+
+.text-anoteblack-100 {
+    color: #ddd;
+}
+
+.title-font {
+    color: #eee;
+}
+
+.text-gray-500 {
+    color: #aaa;
+}
+
+.bg-turquoise-500 {
+    background-color: #30e3ca;
+}
+
+.text-white {
+    color: #fff;
+}
+
+.border-turquoise-500 {
+    border-color: #30e3ca;
+}
+
+.text-black {
+    color: #000;
+}
+
+.bg-anoteblack-200 {
+    background-color: #fff;
+}
+
+.btn-black {
+    background-color: #2c2f30;
+    color: #fff;
+}

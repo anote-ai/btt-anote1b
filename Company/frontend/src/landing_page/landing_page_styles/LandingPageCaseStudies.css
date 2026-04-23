@@ -1,0 +1,104 @@
+.LP-CaseStudies-Main{
+  color: white;
+  margin: 0vh 5vw 5vh 10vw;
+  padding-top: 25vh;
+  justify-content: center;
+  /* text-align: center; */
+}
+.case-study-head{
+display: flex;
+flex-direction: row;
+max-width: 65vw;
+}
+.case-study {
+  width: 100%;
+}
+.case-study-heading{
+  font-size: 1.1rem;
+  margin-top: 2vh;
+}
+.case-study-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #defe47;
+}
+
+.case-study-description {
+  margin-top: 10px;
+  flex:1;
+  flex-basis: 80%;
+  line-height: 1.5;
+}
+
+.read-more-btn {
+  flex:2;
+  flex-basis: 10%;
+  /*display: flex;
+  flex-direction: row;*/
+  padding: 12px 16px;
+  float: center;
+  margin-top: 30px;
+  margin-left: 20px;
+
+  height: 50px;
+  width: 50px;
+
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 22px;
+  /* identical to box height */
+
+
+  color: #000000;
+
+  /* Yellow */
+
+  background: #DEFE47;
+  border: 1px solid black;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+
+.divider {
+  margin: 20px 0;
+  border: none;
+  border-top: 1px solid #000;
+}
+
+.case-study-content {
+  display: flex;
+  max-width: 70vw;
+  justify-content: space-between;
+}
+
+.case-study-section {
+  flex: 1;
+  padding: 20px;
+
+}
+
+.case-study-section p{
+  min-height: 35vh;
+  line-height: 1.5;
+  font-family: 'Helvetica Neue';
+}
+
+.case-study-section h3 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  background: -webkit-linear-gradient(#28b2fb, turquoise);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+
+.case-study-insight-number{
+  font-size: 2.5rem;
+  font-weight: bold;
+  background: -webkit-linear-gradient(#28b2fb, turquoise);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

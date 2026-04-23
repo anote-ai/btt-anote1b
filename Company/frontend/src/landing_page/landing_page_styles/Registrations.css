@@ -1,0 +1,77 @@
+.text-center {
+  color: #ffffff; /* Text color for titles and labels */
+}
+
+.registration-container {
+  background-color: #1f2937; /* Dark background for form container */
+  color: #ffffff; /* Light text for form elements */
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  max-width: 600px; /* Width adjustment to match image */
+}
+
+.registration-container h2,
+.registration-container p {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.registration-container form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px; /* Increased gap for more space */
+  align-items: center;
+}
+
+.registration-container form div {
+  display: flex;
+  flex-direction: column;
+}
+
+.registration-container label {
+  font-size: 14px; /* Reduced font size for labels */
+  margin-bottom: 10px;
+}
+
+.registration-container input,
+.registration-container textarea {
+  padding: 15px; /* Increased padding for input fields */
+  border: 1px solid #2d3748; /* Border color to match input background */
+  background-color: #2d3748; /* Input background color */
+  color: #ffffff; /* Text color for input */
+  border-radius: 8px; /* Rounded borders for input fields */
+}
+
+.registration-container input::placeholder,
+.registration-container textarea::placeholder {
+  color: #a0aec0; /* Placeholder text color */
+}
+
+.registration-container button {
+  grid-column: span 2; /* Make the button span two columns */
+  padding: 15px 30px; /* Padding for button */
+  font-size: 16px;
+  font-weight: bold; /* Font size for button text */
+  background-color: #defe47; /* Color for the button */
+  color: #111827; /* Text color for the button */
+  border: none;
+  border-radius: 8px; /* Rounded borders for button */
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-bottom: 10px;
+}
+
+.registration-container a {
+  color: #28b2fb; /* Link color */
+  text-decoration: underline; /* Underline for links */
+}
+
+@media (max-width: 768px) {
+  .registration-container form {
+    grid-template-columns: 1fr; /* Stack inputs in a single column on smaller screens */
+  }
+
+  .registration-container button {
+    grid-column: span 1; /* Adjust the button to span a single column */
+  }
+}

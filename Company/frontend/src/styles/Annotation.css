@@ -1,0 +1,387 @@
+
+
+    /* @media (min-width: 767px) {
+        .AnnotateOuterView {
+            height: calc(100vh);
+            width: calc(100vw);
+        }
+    }
+
+    @media (max-width: 767px) {
+        .AnnotateOuterView {
+            height: 400px;
+            width: 400px;
+        }
+    }
+
+    @media (min-width: 1300px) {
+        .AnnotateOuterView {
+            height: 1300px;
+            width: 1300px;
+        }
+    } */
+
+
+
+    .AnnotateHistoryView .customers {
+        height: 20px;
+        width: 100%;
+    }
+
+    .AnnotateOuterView {
+        /* height: calc(100vh);
+        width: calc(100vw); */
+        display: grid;
+        /* grid-template-columns: 1fr calc(30vw); */
+        grid-template-columns: 1fr calc(20vw);
+        gap: 20px;
+        padding: 10px;
+    }
+
+    .AnnotateLeftView {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 6fr 2fr;
+        width: 100%;
+        /* background-color: #2F3946; */
+    }
+    .AnnotatePanelView {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 5fr 2fr;
+        background-color: #282E35;
+        /*border: 10px solid #282E35;*/
+        border-radius: 20px;
+        border: 10px solid #1F2225;
+        border-radius: 20px;
+        border-top: 50px solid #1F2225;
+        justify-content: center;
+        place-items: center;
+        /* align-content: center; */
+    }
+    .AnnotateOuterView, .AnnotateHistoryView {
+      background-color: #3D4449;
+    }
+
+    .AnnotateTextView {
+        position: relative;
+        display: grid;
+        grid-template-columns: 1fr;
+        justify-content: center;
+        align-content: center;
+        border-radius: 15px;
+        border: 10px solid #1F2225;
+        border-top: 50px solid #1F2225;
+        background-color: #2a3338;
+        font-family: 'Helvetica Neue';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 32px;
+        line-height: 39px;
+        height: 700px;
+        color: white;
+        overflow-y: scroll;
+      }
+
+    /* .AnnotationDocViewer {
+      min-height: 700px;
+    } */
+
+    @media (max-width: 900px) {
+      .AnnotateTextView {
+        height: 450px;
+      }
+      /* .AnnotationDocViewer {
+        min-height: 450px;
+      } */
+    }
+
+    @media (max-width: 600px) {
+      .AnnotateTextView {
+        height: 300px;
+      }
+      /* .AnnotationDocViewer {
+        min-height: 300px;
+      } */
+    }
+
+
+
+    .AnnotateButtonGrid {
+        display: grid;
+        /* grid-template-columns: 1fr 1fr; */
+        grid-template-columns: 1fr;
+        gap: 20px;
+        overflow-y: scroll;
+        max-height: 360px;
+    }
+    @media (max-width: 1200px) {
+        .AnnotateButtonGrid {
+            grid-template-columns: 1fr;
+        }
+      }
+      .AnnotateAdditionalButtons {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .AnnotateAdditionalButtons button {
+        font-family: Arial;
+        font-weight: bold;
+        width: 80px;
+        font-size: 100%;
+        text-align: center;
+      }
+
+      @media (max-width: 1200px) {
+        .AnnotateAdditionalButtons {
+            grid-template-columns: 1fr;
+        }
+      }
+
+
+    .AnnotateButtonGrid button {
+        width: 150px;
+    }
+
+@media (max-width: 900px) {
+    .AnnotateButtonGrid button {
+        width: 100px;
+    }
+}
+@media (max-width: 600px) {
+    .AnnotateButtonGrid button {
+        width: 80px;
+    }
+  }
+    .AnnotationHistory {
+        font-family: Arial, Helvetica, sans-serif;
+        border-collapse: collapse;
+        display: block;
+        height: 180px;
+        overflow-y: scroll;
+        width: 100%;
+      }
+
+      .AnnotationHistory td, .AnnotationHistory th {
+        border: 1px solid #282E35;
+        padding: 8px;
+        width: 100%;
+      }
+
+      .AnnotationHistory tr:nth-child(odd){background-color: #E6E6FF;}
+
+      .AnnotationHistory tr:nth-child(even){background-color: #FFFFFF;}
+
+      .AnnotationHistory tr:nth-child(odd){
+        background-color: #030712;
+        color: white;
+      }
+
+      .AnnotationHistory tr:nth-child(even){
+        background-color: #111827;
+        color: white;
+      }
+
+
+      .AnnotationHistory tr:hover {
+        background-color: lightgray;
+        color: black;
+      }
+
+      .AnnotationHistory th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: left;
+        background-color: #0038b8;
+        color: white;
+        width: 100%;
+      }
+
+      .AnnotationHistory tr {
+        color: black;
+        font-family: 'Helvetica Neue';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 18px;
+        line-height: 22px;
+        height: 10px;
+        width: 100%;
+      }
+
+      .noCategoriesText {
+        color: white;
+      }
+      @media (max-width: 600px) {
+        .AnnotateOuterView {
+            font-size: 10px;
+        }
+      }
+
+      @media (max-width: 1100px) {
+        .AnnotatePanelView .textInput {
+            width: 150px;
+        }
+      }
+      @media (max-width: 750px) {
+        .AnnotatePanelView .textInput {
+            width: 100px;
+        }
+      }
+      @media (max-width: 550px) {
+        .AnnotatePanelView .textInput {
+            width: 80px;
+        }
+      }
+      .AnnotateHistoryText {
+        color: white;
+        width: 100%;
+      }
+
+      .AnnotateHighlightedText {
+        z-index: 4;
+        background-color: #282E35;
+        border-radius: 20px;
+        overflow-y: scroll;
+        font-size: 20px;
+        padding: 20px 0px;
+        color: white;
+        position: absolute;
+        width: 100%;
+        height: 40px;
+        top: 0px;
+        left: 0px;
+        display: grid;
+        grid-template-columns: 100px 1fr;
+        /* pointer-events:none; */
+      }
+
+    .AnnotateImportantFeatures {
+      color: white;
+      position: relative;
+    }
+
+    .AnnotateImportantFeatures ul {
+      list-style: none;
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      align-items: left;
+      text-align: left;
+      max-height: 70px;
+      overflow-y: scroll;
+    }
+
+    .AnnotateImportantFeatures-Title {
+      display: grid;
+      grid-template-columns: 1fr 30px;
+      place-items: center;
+    }
+    .AnnotateImportantFeatures-Title div {
+      border: 1px solid white;
+      border-radius: 5px;
+      cursor: pointer;
+      -webkit-user-select: none; /* Safari */
+      -ms-user-select: none; /* IE 10 and IE 11 */
+      user-select: none; /* Standard syntax */
+      height:21px;
+      width:21px;
+    }
+    @media (max-width: 700px) {
+      .AnnotateImportantFeatures-Title div {
+        height:14px;
+        width:14px;
+      }
+    }
+    .AnnotateImportantFeatures-Help {
+      position: absolute;
+      background-color: black;
+      top: 0px;
+      bottom: -30px;
+      left: -200px;
+      right: 20px;
+      border-radius: 10px;
+      padding: 20px;
+      -webkit-user-select: none; /* Safari */
+      -ms-user-select: none; /* IE 10 and IE 11 */
+      user-select: none; /* Standard syntax */
+    }
+
+.AnnotateMarkImportantButton{
+  font-size: 14px;
+  height: 25px;
+  width: 100px;
+  padding: 0px 0px;
+  margin: 0px 0px;
+  margin-left: 15px;
+}
+
+.AnnotateMarkImportantSuccess {
+  color: #defe47;
+  font-size: 16px;
+  font-weight: bold;
+}
+/*
+    AnnotateLeftView
+    AnnotateTextView
+    AnnotateHistoryView
+    AnnotatePanelView
+    AnnotateButtonGrid */
+
+    .AnnotatePanelView .textInput {
+      align-items: center;
+      text-align: center;
+    }
+    .AnnotatePanelView .textInput::placeholder {
+      align-items: center;
+      text-align: center;
+    }
+
+    .markedImportant {
+      background-color: black;
+      color: #defe47;
+      border: 1px solid #defe47;
+    }
+
+    .markedEntity {
+      position: relative;
+    }
+
+    .deleteButtonEntityAnnotation {
+      position: absolute;
+      top: 0;
+      right: 0;
+      visibility: visible;
+      font-size: 12px;
+      background-color: transparent;
+      margin: 0px;
+      padding: 0px;
+    }
+
+    .AnnotateButtonGridTitle {
+      font-size: 20px;
+      font-weight: bold;
+      color: white;
+    }
+
+
+    .AnnotateButtonGridTitlePrompt {
+      font-size: 20px;
+      font-weight: bold;
+      color: white;
+      text-align: left;
+      padding-left: 5px;
+    }
+
+    .AnnotateButtonGridPrompt {
+      font-size: 16px;
+      color: white;
+    }
+
+    .AnnotateSelected {
+      background-color: #282E35;
+      color: white;
+      box-shadow: 0 0 15px 4px rgba(0, 0, 0, 0.4);
+      border: 2px solid white;
+    }

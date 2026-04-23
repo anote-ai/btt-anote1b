@@ -1,0 +1,11 @@
+
+.downloadButton {
+    align-items: center;
+    vertical-align: center;
+}
+
+.DownloadTopDiv {
+    /* width: calc(100vw); */
+    display: grid;
+    grid-template-columns: 5fr 1fr;
+}

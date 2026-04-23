@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import 'flowbite/dist/flowbite.css';
+
+
+h1{
+    @apply text-4xl font-semibold my-5;
+}
+
+h2{
+    @apply text-xl font-semibold my-4;
+}
+
+h3{
+    @apply font-semibold my-4 text-xl;
+}
+
+h4{
+    @apply font-semibold my-4 text-lg;
+}
+
+h6{
+    @apply font-semibold my-5 text-base;
+}
+
+.searchBoxCommonOld{
+    @apply py-6 w-3/4;
+}
+
+.searchBoxCommon{
+    @apply py-5;
+}

@@ -1,0 +1,432 @@
+.ButtonType1 {
+    justify-content: flex-end;
+    padding: 10px 16px;
+    padding-bottom: 13px;
+    margin-right: 10px;
+    margin-top: 10px;
+    height: 50px;
+    width: 150px;
+    font-family: 'Helvetica Neue';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 22px;
+    color: #000000;
+    background: #DEFE47;
+    border-radius: 4px;
+    border: 1px solid black;
+    display: inline-block;
+    cursor: pointer;
+  }
+
+.ButtonType1:disabled,
+.ButtonType1[disabled]{
+border: 1px solid #999999;
+background-color: #cccccc;
+color: #666666;
+}
+
+
+.ButtonType6 {
+  justify-content: flex-end;
+  padding: 10px 16px;
+  padding-bottom: 13px;
+  margin-right: 0px;
+  margin-top: 10px;
+  height: 50px;
+  width: 225px;
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 22px;
+  color: #000000;
+  background: #DEFE47;
+  border-radius: 4px;
+  border: 1px solid black;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.ButtonType6:disabled,
+.ButtonType6[disabled]{
+border: 1px solid #999999;
+background-color: #cccccc;
+color: #666666;
+}
+
+.ButtonType4 {
+  justify-content: flex-end;
+  padding: 10px 16px;
+  padding-bottom: 13px;
+  margin-right: 10px;
+  margin-top: 10px;
+  height: 50px;
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 22px;
+  color: #000000;
+  background: #DEFE47;
+  border-radius: 4px;
+  border: 1px solid black;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.ButtonType4:disabled,
+.ButtonType4[disabled]{
+border: 1px solid #999999;
+background-color: #cccccc;
+color: #666666;
+}
+
+.ButtonTypeLoad {
+  justify-content: center;
+  padding: 10px 16px;
+  margin-top: 10px;
+  align-items: center;
+  text-align: center;
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 22px;
+  color: #000000;
+  background: #DEFE47;
+  border-radius: 4px;
+  border: 1px solid black;
+  cursor: pointer;
+}
+.ButtonTypeLoad:disabled,
+.ButtonTypeLoad[disabled]{
+border: 1px solid #999999;
+background-color: #cccccc;
+color: #666666;
+}
+
+/* Secondary button styles */
+.ButtonType2 {
+    background-color: #DEFE47;
+    border: 3px solid black;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    color: black;
+    font-size: 18px;
+    font-family: "Arial";
+    padding: 10px 20px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    display: inline-block;
+    cursor: pointer;
+  }
+
+.ButtonType2:hover {
+    background-color: gray;
+
+    color: #fff;
+}
+
+.ButtonType2.Active {
+  background-color: #0170e8;
+  color: #fff;
+}
+
+/* Secondary button styles */
+.ButtonType3 {
+  background-color: lightgreen;
+  border: 3px solid black;
+  color: black;
+  font-size: 30px;
+  font-family: "Arial";
+  padding: 10px 7px;
+  align-items: center;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.ButtonType3:hover {
+  background-color: darkgreen;
+  color: #fff;
+}
+
+.ButtonType2.Active {
+background-color: #0170e8;
+color: #fff;
+}
+
+/* Secondary button styles */
+.ButtonTypeUpload {
+  background-color: #28B2FB;
+  border: 2.5px solid black;
+  color: black;
+  font-size: 18px;
+  font-family: "Arial";
+  padding: 10px 20px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 22px;
+  display: inline-block;
+}
+
+.ButtonTypeUpload:hover {
+  background-color: #0170e8;
+
+  color: #fff;
+}
+
+.ButtonTypeUpload.Active {
+background-color: #DEFE47;
+color: black;
+border: 4px solid black;
+font-family: 'Helvetica Neue';
+font-style: normal;
+font-weight: bold;
+font-size: 18px;
+line-height: 22px;
+display: inline-block;
+}
+
+.CreateDatasetButton {
+  justify-content: flex-end;
+  padding: 10px 16px;
+  padding-bottom: 13px;
+  margin-right: 10px;
+  margin-top: 10px;
+  height: 50px;
+  width: 230px;
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 22px;
+  color: #000000;
+  background: #DEFE47;
+  border-radius: 4px;
+  border: 1px solid black;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.CreateDatasetButton:disabled,
+.CreateDatasetButton[disabled]{
+border: 1px solid #999999;
+background-color: #cccccc;
+color: #666666;
+}
+
+.HelpButton{
+  position: absolute;
+  right: 140px;
+  top: 50px;
+  padding: 5px;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.HelpButton {
+  background-color: black;
+  color: white;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  margin-right: 8px;
+  margin-left: 10px;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 9px;
+  padding-bottom: 9px;
+  transition: opacity 0.15s;
+  vertical-align: top;
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 22px;
+  cursor: pointer;
+  /* identical to box height */
+
+  /* Black */
+
+  background: #1F2225;
+  /* Yellow */
+
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.HelpButton:hover {
+  opacity: 0.8;
+  color: #defe47;
+}
+
+.HelpButton:active {
+  opacity: 0.5;
+}
+
+
+.HomeButton{
+  position: absolute;
+  right: 240px;
+  top: 50px;
+  padding: 5px;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.HomeButton {
+  background-color: black;
+  color: white;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  margin-right: 8px;
+  margin-left: 10px;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 9px;
+  padding-bottom: 9px;
+  transition: opacity 0.15s;
+  vertical-align: top;
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 22px;
+  cursor: pointer;
+  /* identical to box height */
+
+
+  color: #DEFE47;
+
+  /* Black */
+
+  background: #1F2225;
+  /* Yellow */
+
+  border: 1px solid #DEFE47;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.HomeButton:hover {
+  opacity: 0.8;
+}
+
+.HomeButton:active {
+  opacity: 0.5;
+}
+
+
+.ButtonTypeCreate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 180px; /* Adjust based on your needs */
+  height: 180px; /* Adjust based on your needs */
+  border: 2px solid white;
+  border-radius: 5%;
+  background: #1f2225;
+  color: white;
+  margin: 5px;
+  margin-left: 15px;
+  margin-right: 15px;
+  padding: 0 3px 0 3px;
+}
+
+.ButtonTypeCreate .icon {
+  margin-bottom: 10px;
+  padding-top:15px;
+}
+
+.ButtonTypeCreate .title {
+  font-size: 20px; /* Adjust based on your needs */
+  text-align: center;
+  line-height: 1.1;
+  margin-bottom: 5px; /* Adjust based on your needs */
+  font-weight: 700;
+}
+
+.ButtonTypeCreate .subtitle {
+  font-size: 12px; /* Adjust based on your needs */
+  text-align: center;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  margin-left: 5px;
+  margin-right: 5px;
+  line-height: 1.2;
+  
+}
+
+.ButtonTypeCreate:hover {
+  border-color: #defe47;
+  cursor: pointer;
+  width: 185px; /* Adjust based on your needs */
+  height: 185px; /* Adjust based on your needs */
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.row {
+  display: flex;
+  justify-content: center; /*space-around;*/
+  flex-direction: row; /* This will make the list items stack horizontally */
+  margin-bottom: 40px; /* Space between rows, adjust based on your needs */
+}
+
+.row li {
+  list-style: none;
+}
+
+.createDatasetTitle {
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 35px;
+  color: #fff;
+}
+
+.createDatasetSubtitle {
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 18px;
+  color: #fff;
+}
+
+.backButton {
+  color: none;
+  background-color: transparent;
+  border: 2px solid #bcbcbc;
+  height: 60px;
+  width: 60px;
+  border-radius: 50%;
+  margin: 18px;
+}
+.backButton .backButtonIcon{
+  padding-left: 15px;
+}
+.backButton .forwardButtonIcon{
+  padding-left: 15px;
+}
+
+.backButton:hover {
+  height: 63px;
+  width: 63px;
+  border: 2px solid #defe47;
+}
+
+.UploadFilesButton{
+  margin-top: 20px;
+}

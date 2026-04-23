@@ -1,0 +1,100 @@
+.ReviewerView, .AdminView {
+    margin-bottom: 30px;
+}
+
+.InnerReviewerView {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    /* height: 500px; */
+    color: white;
+    background-color: gray;
+}
+
+.LeftReviewerView {
+    background-color: #3D4449;
+    /* height: 500px; */
+    color: white;
+}
+.LeftReviewerView ul {
+    list-style: none;
+    text-align: left;
+}
+
+.RightReviewerView {
+    background-color: #171D26;
+    /* height: 500px; */
+}
+
+.ReviewLegend {
+    float: right;
+    text-align: left;
+    margin-right: 10px;
+}
+
+.ReviewProjects {
+    float: left;
+    text-align: left;
+    margin-left: 10px;
+}
+
+.ReviewAdminOverride {
+    float: right;
+    text-align: left;
+    margin-right: 10px;
+    margin-top: 100px;
+}
+
+.addNewProject {
+    font-size: 20px;
+}
+
+.annotatorInfo {
+    text-align: left;
+}
+
+.datasetInfo {
+    text-align: left;
+}
+
+.ReviewTable {
+    float: left;
+    width: 75%;
+    margin-left: 5px;
+}
+
+.ReviewOverrideCategory {
+    align-items: left;
+    padding-left: 0px;
+    margin-left: 0px;
+    max-width: 350px;
+}
+
+.newAnnotatorsList {
+    list-style: none;
+    text-align: left;
+}
+
+.AdminViewInnerGrid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.AdminViewOuterGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+.AdminReviewTable {
+    max-height: 200px;
+    height: auto;
+    overflow-y: scroll;
+    border: none;
+}
+
+.AdminReviewTable th {
+    position: sticky;
+    top: 0; /* The distance from the top of the viewport */
+    z-index: 1; /* Ensure the header is above the table content */
+  }

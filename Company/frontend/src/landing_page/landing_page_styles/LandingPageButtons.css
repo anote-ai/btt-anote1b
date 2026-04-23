@@ -1,0 +1,188 @@
+
+.LP-Get-Started {
+    /**display: flex-end;
+    flex-direction: row;
+    float: right;*/
+    justify-content: flex-end;
+    padding: 15px 15px;
+    margin-right: 10px;
+    margin-top: 15px;
+    height: 50%;
+
+    font-family: 'Arial';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 22px;
+    /* identical to box height */
+
+    color: #000000;
+    cursor: pointer;
+
+    /* Yellow */
+
+    background: #DEFE47;
+    border-radius: 4px;
+    border: 1px solid black;
+}
+
+.arrow-icon {
+    font-size: 10px;
+    padding-left: 10px;
+}
+
+.LP-Get-Started-Home {
+    /*display: flex;
+    flex-direction: row;*/
+    padding: 12px 16px;
+    float: center;
+    margin-top: 30px;
+    margin-right: 20px;
+
+    font-family: 'Arial';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 22px;
+    /* identical to box height */
+
+
+    color: #000000;
+
+    /* Yellow */
+
+    background: #DEFE47;
+    border: 1px solid black;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.LP-Get-Started-New {
+    /**display: flex-end;
+    flex-direction: row;
+    float: right;*/
+    justify-content: flex-end;
+    padding: 15px 15px;
+    margin-right: 10px;
+    margin-top: 15px;
+    height: 50%;
+
+    font-family: 'Arial';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 22px;
+    /* identical to box height */
+
+    color: #000000;
+    cursor: pointer;
+
+    /* Yellow */
+
+    background: #DEFE47;
+    border-radius: 4px;
+    border: 1px solid black;
+}
+
+.LP-Documentation-New {
+    /*display: flex;
+    flex-direction: row;*/
+    justify-content: flex-end;
+    padding: 15px 15px;
+    margin-right: 10px;
+    margin-top: 15px;
+    height: 50%;
+
+    font-family: 'Arial';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 22px;
+
+
+    /* identical to box height */
+
+
+    color: #DEFE47;
+
+    /* Black */
+
+    background: black;
+    /* Yellow */
+
+    border: 1px solid #DEFE47;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.LP-Documentation {
+    /*display: flex;
+    flex-direction: row;*/
+    justify-content: flex-end;
+    padding: 15px 15px;
+    margin-right: 10px;
+    margin-top: 15px;
+    height: 50%;
+
+    font-family: 'Arial';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 22px;
+
+
+    /* identical to box height */
+
+
+    color: #DEFE47;
+
+    /* Black */
+
+    background: black;
+    /* Yellow */
+
+    border: 1px solid #DEFE47;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+
+.LP-Schedule-Demo-Home {
+    /*display: flex;
+    flex-direction: row;*/
+    padding: 12px 16px;
+    float: center;
+    margin-top: 30px;
+    margin-right: 20px;
+
+    font-family: 'Arial';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 22px;
+    /* identical to box height */
+
+
+    color: #DEFE47;
+
+    /* Black */
+
+    background: black;
+    /* Yellow */
+
+    border: 1px solid #DEFE47;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@layer components{
+    .btn-yellow {
+        @apply font-['Arial'] inline-flex bg-yellow-500 text-gray-900 border-2 border-yellow-500 py-2 px-6 focus:outline-none hover:bg-yellow-300 rounded text-sm md:text-lg font-bold
+    }
+    .btn-black{
+        @apply  font-['Arial'] inline-flex bg-gray-900 text-yellow-500 border-2 border-yellow-500 py-2 px-6 focus:outline-none hover:bg-gray-800 rounded text-sm md:text-lg font-bold
+    }
+}

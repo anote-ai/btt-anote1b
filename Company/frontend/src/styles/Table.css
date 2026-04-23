@@ -1,0 +1,348 @@
+.customers {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+
+    display: block;
+    height: 500px;
+    overflow-y: scroll;
+
+
+  }
+
+  .customers td, .customers th {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+
+  .customers tr:nth-child(odd){
+    background-color: #3D4449;
+    color: white;
+    color: white;
+    font-family: 'Helvetica Neue';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 24px;
+    text-align: left;
+  }
+
+  .customers tr:nth-child(even){
+    background-color: #2a3338;
+    color: white;
+    font-family: 'Helvetica Neue';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 24px;
+    text-align: left;
+  }
+
+
+  .customers tr:hover {background-color: #ddd;}
+
+  .customers th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    /* background-color: #280F96; */
+    background-color: #1F2225;
+    color: white;
+  }
+
+  .customers tr.firstRow {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  .customers tr.lastRow {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+  }
+
+  .customers {
+    position: relative;
+  }
+
+  /* .selectLabelTable {
+    margin-left: 25%;
+    margin-right: 25%;
+    margin-right: auto;
+    text-align:center;
+  } */
+
+  /* .customers th.first {
+    position: sticky;
+    top: 0;
+  }
+  .customers th.last {
+
+  } */
+
+  .tableContainer{
+    overflow-x:auto;
+    overflow-x:scroll;
+  }
+
+  .ModelMetricsTable {
+    border-collapse: collapse;
+    width: 100%;
+    font-weight: bolder;
+    text-align: left;
+    border-bottom: solid 1px rgb(61, 68, 73);
+    font-family: Arial, Helvetica, sans-serif;
+
+    display: block;
+    height: 80vh;
+    overflow-y: scroll;
+    overflow-x: scroll;
+    border-radius: 5px;
+    border-collapse: collapse;
+    /* width: 500px; */
+  }
+
+  .ModelMetricsTable th, td {
+    padding: 5px 10px;
+  }
+
+  .ModelMetricsTable td {
+    border-bottom: solid 1px rgb(61, 68, 73);
+  }
+
+  .ModelMetricsTable tr:nth-child(even) {
+    background-color: rgb(61, 68, 73);
+    color: white;
+  }
+
+  .ModelMetricsTable tr:nth-child(odd) {
+    background-color: black;
+    color: white;
+  }
+
+  .ModelMetricsTable tr:hover {
+    color: black;
+    background-color: #ddd;
+  }
+  /* .DarkTable .firstRow {
+    color: white;
+  } */
+
+  .ModelMetricsTable th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  /* padding-left: 60px; */
+  text-align: left;
+  /* background-color: #280F96; */
+
+  background-color: #171d26;
+  /* background-color: black; */
+  color: white;
+  }
+
+  .ModelMetricsTable tr.firstRow {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  border-radius: 5px;
+  }
+
+  .ModelMetricsTable tr.lastRow {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  }
+
+  .ModelMetricsTable {
+    color: white;
+    font-family: 'Helvetica Neue';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 24px;
+    position: relative;
+  }
+
+
+  .ModelMetricsTable tr.firstRow {
+    /* background-color: #0038b8; */
+  background-color: #171d26;
+
+  }
+
+  .ModelMetricsTable tr.lastRow {
+  background-color: #171d26;
+  }
+
+  .ModelMetricsTable a {
+  color: white;
+  }
+
+
+
+  .DarkTable {
+    border-collapse: collapse;
+    width: 100%;
+    font-weight: bolder;
+    text-align: left;
+    border-bottom: solid 1px rgb(61, 68, 73);
+    font-family: Arial, Helvetica, sans-serif;
+
+    display: block;
+    height: 80vh;
+    overflow-y: scroll;
+    overflow-x: scroll;
+    border-radius: 5px;
+    border-collapse: collapse;
+    /* width: 500px; */
+  }
+
+  .DarkTable th, td {
+    padding: 5px 10px;
+  }
+
+  .DarkTable td {
+    border-bottom: solid 1px rgb(61, 68, 73);
+  }
+
+  .DarkTable tr:nth-child(even) {
+    background-color: rgb(61, 68, 73);
+  }
+
+  .DarkTable tr:nth-child(odd) {
+    background-color: #282E35;
+  }
+
+  .DarkTable tr:hover {
+    background-color: #3282b8;
+  }
+
+
+
+    .DarkTable tr:hover {
+      color: black;
+      background-color: #ddd;
+    }
+    /* .DarkTable .firstRow {
+      color: white;
+    } */
+
+    .DarkTable th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    /* padding-left: 60px; */
+    text-align: left;
+    /* background-color: #280F96; */
+
+    background-color: #171d26;
+    /* background-color: black; */
+    color: white;
+    }
+
+    .DarkTable tr.firstRow {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    border-radius: 5px;
+    }
+
+    .DarkTable tr.lastRow {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+    }
+
+    .DarkTable {
+      color: white;
+      font-family: 'Helvetica Neue';
+      font-style: normal;
+      font-weight: 500;
+      font-size: 15px;
+      line-height: 24px;
+      position: relative;
+    }
+
+
+    .DarkTable tr.firstRow {
+      /* background-color: #0038b8; */
+    background-color: #171d26;
+
+    }
+
+    .DarkTable td.firstRow {
+      /* background-color: #0038b8; */
+      background-color: #171d26;
+
+    }
+
+    .DarkTable tr.lastRow {
+    background-color: #171d26;
+    }
+
+    .DarkTable a {
+    color: white;
+    }
+
+    .CenteredTable {
+      padding-right: 0%;
+    }
+
+    .CenteredTableContainer {
+      display: grid;
+      place-items: center;
+      width: 100%;
+    }
+
+
+
+
+
+/* Pagination Styling */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pagination.table-pagination {
+  margin-top: 16px;
+  border-top: 1px solid #eee;
+  padding-top: 8px;
+  width: 100%;
+}
+
+.pagination li {
+  margin-right: 4px;
+}
+
+.pagination li a {
+  display: block;
+  padding: 4px 8px;
+  text-decoration: none;
+  color: #007bff;
+  border: 1px solid #dee2e6;
+  border-radius: 3px;
+  transition: all 0.2s ease;
+}
+
+.pagination li a:hover {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.pagination li.disabled a {
+  color: #6c757d;
+  pointer-events: none;
+  background-color: #fff;
+}
+
+.pagination input[type="number"] {
+  width: 60px;
+  text-align: center;
+  border: 1px solid #dee2e6;
+  border-radius: 3px;
+  padding: 4px;
+}

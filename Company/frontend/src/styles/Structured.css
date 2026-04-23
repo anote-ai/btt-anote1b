@@ -1,0 +1,57 @@
+.StructuredView {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+@media (max-width: 800px) {
+    .StructuredView {
+        grid-template-columns: 1fr;
+    }
+}
+
+.StructuredView div {
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-content: center;
+    place-items: center;
+    align-content: center;
+}
+
+.axisText {
+    stroke: white;
+    fill:white;
+    font-family: 'Helvetica Neue';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 24px;
+    color: white;
+}
+
+.plotTitleText {
+    stroke: white;
+    fill:white;
+    font-family: 'Helvetica Neue';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 29px;
+    color: white;
+}
+
+.axisStyle {
+    stroke: white;
+    fill:white;
+    color: white;
+}
+
+.StructuredDashboardView {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+}
+
+.rootNameStructuredDashboard {
+    color:white;
+}

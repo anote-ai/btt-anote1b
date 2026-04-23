@@ -1,0 +1,563 @@
+.uploadTitleHeader {
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 35px;
+  color: #fff;
+}
+
+.uploadTitleSubHeader {
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 18px;
+  color: #fff;
+}
+
+.uploadTitleHeaderSmaller {
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 25px;
+  padding-top: 30px;
+  color: #defe47;
+}
+
+.selectPreloadedDataset {
+  /* width: 450px; */
+
+  background: #282E35;
+  border-radius: 10px;
+  display: grid;
+  grid-template-columns: 1fr;
+  /* justify-content: center; */
+  /* align-content: center; */
+  place-items: center;
+}
+
+.selectPreloadedDatasetContainer {
+  width: 300px;
+  height: 300px;
+
+  background: #171D26;
+  border-radius: 10px;
+  display: grid;
+  grid-template-columns: 1fr;
+  /* justify-content: center; */
+  /* align-content: center; */
+  place-items: left;
+  padding-left: 30px;
+}
+
+.selectPreloadedDatasetText {
+
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 35px;
+  line-height: 35px;
+  text-align: center;
+
+  color: #000000;
+
+}
+  .SelectDatasetView {
+
+    text-align: center;
+    align-items: left;
+    color: #000000;
+
+  }
+
+
+#loadDatasetForm {
+  /* height: 80%; */
+  font-family: "Arial";
+  font-weight: bold;
+  /*padding-right: 50px;*/
+}
+
+.selectDatasetFormListReal {
+  max-height: 200px;
+}
+
+
+#loadDatasetFormSelect {
+  /* height: 80%; */
+  font-family: "Arial";
+  font-weight: bold;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+}
+
+#loadDatasetList {
+  overflow-y:auto;
+  list-style-type: none;
+  color: white;
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-weight: bold;
+  text-align: left;
+  margin-left: 35%;
+}
+
+.selectDatasetListReal {
+  height: 40%;
+  width: 100%;
+  text-align: center;
+  padding-left: 10%;
+  border-radius: 10px;
+  justify-content: left;
+}
+
+.textInput {
+  width: 200px;
+  height: 35px;
+  border-radius: 10px;
+  /* border: 1px solid #defe47;
+  border-color: #defe47; */
+  /* margin-left: 10%; */
+  align-items: left;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  text-align: left;
+  /* background-color: white; */
+  border: none;
+}
+
+.textInputData {
+  width: 200px;
+  height: 35px;
+  border-radius: 10px;
+  /* border: 1px solid #defe47; */
+  /* background-color: white; */
+  /* margin-left: 10%; */
+  /* padding-left: 10px; */
+  border: none;
+}
+
+.textInputDataURL {
+  width: 200px;
+  align-items: center;
+  margin-top: 15px;
+}
+
+
+/*.NewDatasetView-Nav {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: left;
+  text-align: left;
+  justify-content: left;
+  align-content: left;
+}*/
+
+.Upload-Unselected {
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-content: center;
+  align-content: center;
+}
+
+.uploadNewDataset {
+  border-radius: 10px;
+  border: 1px solid;
+}
+
+/* .selectPreloadedDataset {
+  border-radius: 10px;
+  border: 1px solid;
+} */
+
+
+
+.Upload-Nav {
+  display: flex;
+  justify-content: center; /* comment this for mobile view if you don't want the image in the center*/
+  align-items: center;
+  list-style-type: none;
+  gap: 30px;
+  color: white
+}
+
+@media (min-width: 800px) {
+  .Upload-Nav {
+    gap: 200px;
+  }
+}
+.Upload-Nav li {
+  cursor: grab;
+  /* text-decoration: underline;  */
+  /* border-bottom: 3px solid #0038B8; */
+}
+.Upload-Nav li.Selected h3 {
+  padding-bottom: 5px;
+  border-bottom: 2px solid #28b2fb;
+}
+
+.Upload-Nav li:hover {
+  color: #defe47;
+}
+/* .Upload-Nav li.Unselected h3 {
+  border-bottom: 3px solid gray;
+} */
+
+.inputColSelected {
+  background-color:white;
+  color:black;
+}
+
+.labelColSelected {
+  background-color: orange;
+  color:black;
+}
+
+.headerColSelected {
+  background-color:#defe47;
+  color:black;
+}
+
+.errorText {
+  color: #D0342C;
+}
+
+/*.NewDatasetView {
+  width: 500px;
+  height: 500px;
+  display: grid;
+  grid-template-columns: 1fr;
+}*/
+
+.NotLoggedIn {
+  background-color: #1F2225;
+  border: none;
+}
+
+.NewDatasetSubTextView {
+  width: 60%;
+  line-height: 2;
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 24px;
+}
+
+.NewDatasetView-Content-Nav ul {
+  display: grid;
+  grid-template-columns: 1fr;
+  list-style-type: none;
+}
+
+.NewDatasetView-Content-Nav li {
+  padding-top: 10px;
+  font-family: "Arial";
+  font-weight: bold;
+}
+
+/*.NewDatasetView-Content {
+  display: grid;
+  grid-template-columns: 1fr;
+  border-radius: 10px;
+}*/
+
+/*.UploadFilesView h1{
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-size: 20px;
+  align-items: left;
+  text-align: left;
+  padding-top: 30px;
+  color: #defe47;
+}*/
+
+.UploadFilesView h3{
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-size: 14px;
+  align-items: left;
+  text-align: left;
+  /* padding-left: 10%; */
+  padding-top: 30px;
+  color: #defe47;
+}
+
+.UploadFilesView p{
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  align-items: left;
+  text-align: left;
+  /* padding-left: 10%; */
+  /*padding-left: 30px;*/
+}
+
+
+/*.ConnectorView h1{
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-size: 20px;
+  align-items: left;
+  text-align: left;
+  padding-top: 30px;
+  color: #defe47;
+}*/
+
+.ConnectorView p{
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  align-items: left;
+  text-align: left;
+  /* padding-left: 10%; */
+  /*padding-left: 30px;*/
+}
+
+.NewDatasetPopup ButtonType1{
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  align-items: left;
+  text-align: left;
+  /* padding-left: 10%; */
+  /*padding-left: 30px;*/
+}
+
+.UploadFilesView label{
+  font-weight: bold;
+  /*padding-right: 50px;*/
+}
+
+
+/*.connectorDatasetContainer h1{
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-size: 20px;
+  align-items: left;
+  text-align: left;
+  padding-top: 30px;
+  color: #defe47;
+}*/
+
+.connectorDatasetContainer p{
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  align-items: left;
+  text-align: left;
+  /* padding-left: 10%; */
+  /*padding-left: 30px;*/
+}
+
+/*.DatasetHubView h1 {
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+    font-size: 20px;
+    align-items: left;
+    text-align: left;
+    padding-top: 30px;
+    color: #defe47;
+}*/
+
+.DatasetHubView p {
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  align-items: left;
+  text-align: left;
+  /* padding-left: 10%; */
+}
+
+.LoadHubButton {
+  margin-top: 20px;
+}
+
+
+.SelectInputTextButton {
+  background-color: #fe00fe;
+}
+
+.SelectLabelButton {
+  background-color: orange;
+}
+
+/* .inputColSelected {
+  background-color:#005ccc;
+  color:white;
+}
+
+.labelColSelected {
+  background-color:#00c4cc;
+  color:white;
+} */
+
+
+.NewDatasetPopup-StructuredView-Options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-content: center;
+  align-content: center;
+}
+
+.NewDatasetPopup-StructuredView-Options button {
+  width: 200px;
+}
+@media (max-width: 800px) {
+  .NewDatasetPopup-StructuredView-Options button {
+    width: 100px;
+  }
+}
+
+.NewDatasetPopup-StructuredView {
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-content: center;
+  align-content: center;
+  place-items: center;
+  gap: 20px;
+  color: white;
+  margin-top: 30px;
+}
+
+.selectLabelTable.DarkTable {
+  height: auto;
+}
+
+.selectPreloadedDataset .textInput {
+  margin: 0px;
+}
+
+.selectPreloadedDataset #loadDatasetForm {
+  height: 600px;
+  margin-top: 20px;
+}
+
+.selectPreloadedDataset #loadDatasetFormSelect {
+  height: 600px;
+  margin-top: 20px;
+  text-align: center;
+  align-items: center;
+}
+
+.selectPreloadedDataset #loadDatasetFormSelect li {
+  margin-left: 0%;
+}
+
+
+#loadDatasetButton {
+  margin-top: 40px;
+}
+
+.ConnectorQuery {
+  width: 200px;
+  height: 35px;
+  border-radius: 10px;
+  border: 1px solid #defe47;
+  align-items: center;
+  text-align: center;
+  background-color: white;
+  /* padding-left: 10px; */
+  border: none;
+}
+
+.ConnectorChooseContent {
+  align-items: center;
+  text-align: center;
+  color: white;
+}
+
+.ConnectorChooseContent h3 {
+  color: #defe47;
+}
+
+.DatasetHubView, .ConnectorView, .UploadFilesView, .HTMLParserView {
+  margin-left: 10%;
+  margin-bottom: 30px;
+}
+
+/*.selectHubDataset {
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-content: left;
+  align-content: left;
+  place-items: left;
+}*/
+
+.datasetHubList{
+  max-height: 200px;
+}
+
+/*.NewDatasetPopup-DefaultView {
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-content: left;
+  align-content: left;
+  place-items: left;
+}*/
+
+/*.ConnectorView {
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-content: left;
+  align-content: left;
+  place-items: left;
+}*/
+
+.uppy-Dashboard-isFixed {
+  overflow: scroll;
+}
+
+/*.HTMLParserView h1 {
+    font-family: 'Helvetica Neue';
+    font-style: normal;
+    font-size: 20px;
+    padding-top: 30px;
+    color: #defe47;
+    text-align: center;
+}*/
+
+.HTMLParserView {
+    align-items: left;
+    text-align: left;
+}
+
+.HTMLParserView p {
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  align-items: left;
+  text-align: left;
+  /* padding-left: 10%; */
+}
+
+.UrlParserInputUrls {
+  display: grid;
+  grid-template-columns: 1fr;
+  max-height: 250px;
+  overflow-y: scroll;
+}
+
+/* Upload selected styles */
+.Upload-Selected, .AccountView {
+  /* background-color: #fff; */
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  align-items: center;
+  color: white;
+  text-align: left;
+  padding-left: 7%;
+ }
