@@ -1,6 +1,11 @@
 """
 Shared pytest fixtures for all tests
 """
+import os
+
+# Relax API rate limits for integration tests (many POST /api/submissions in one run).
+os.environ.setdefault("DISABLE_RATE_LIMIT", "1")
+
 import pytest
 from database import SessionLocal, init_db
 from models import Base, Dataset, Submission

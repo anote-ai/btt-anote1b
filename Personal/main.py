@@ -17,7 +17,8 @@ from schemas import (
     SuccessResponse, ErrorResponse
 )
 from evaluators import get_evaluator
-from evaluation_service import evaluate_submission
+from evaluation_service import evaluate_submission, validate_complete_predictions
+from dataset_import import persist_imported_dataset, DatasetImportError
 from cache import cached_leaderboard, invalidate_leaderboard_cache, get_cache_stats
 from rate_limiter import setup_rate_limiting, RATE_LIMITS
 from logger import logger, log_api_request, log_evaluation, log_error
@@ -234,7 +235,12 @@ async def submit_predictions(
     dataset = db.query(Dataset).filter(Dataset.id == submission.dataset_id).first()
     if not dataset:
         raise HTTPException(status_code=404, detail="Dataset not found")
-    
+
+    try:
+        validate_complete_predictions(dataset.ground_truth, submission.predictions)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
     # Create submission
     submission_id = str(uuid.uuid4())
     db_submission = Submission(
@@ -490,19 +496,25 @@ async def seed_sample_data(request: Request, db: Session = Depends(get_db)):
     This populates the leaderboard with popular benchmarks.
     """
     try:
-        from seed_data import SAMPLE_DATASETS, create_baseline_predictions
-        from datetime import datetime as dt
-        
+        from seed_data import (
+            SAMPLE_DATASETS,
+            create_baseline_predictions,
+            merged_ground_truth_for_sample_config,
+        )
+
         datasets_added = 0
         submissions_added = 0
-        
+
         for dataset_config in SAMPLE_DATASETS:
             # Check if dataset already exists
             existing = db.query(Dataset).filter(Dataset.name == dataset_config["name"]).first()
             if existing:
                 continue
-            
-            # Create dataset
+
+            base_gt = merged_ground_truth_for_sample_config(dataset_config)
+            evaluator = get_evaluator(dataset_config["task_type"])
+
+            # Create dataset (same expanded ground truth as seed_database / init_db)
             dataset_id = str(uuid.uuid4())
             dataset = Dataset(
                 id=dataset_id,
@@ -514,21 +526,22 @@ async def seed_sample_data(request: Request, db: Session = Depends(get_db)):
                 labels_public=dataset_config["labels_public"],
                 primary_metric=dataset_config["primary_metric"],
                 additional_metrics=dataset_config["additional_metrics"],
-                num_examples=len(dataset_config["ground_truth"]),
-                ground_truth=dataset_config["ground_truth"]
+                num_examples=len(base_gt),
+                ground_truth=base_gt,
             )
             db.add(dataset)
             db.flush()
             datasets_added += 1
-            
-            # Create baseline submissions
+
+            # Create baseline submissions (scores from evaluator, matching seed_database)
             for baseline in dataset_config.get("baseline_models", []):
                 submission_id = str(uuid.uuid4())
-                predictions = create_baseline_predictions(
-                    dataset_config["ground_truth"],
-                    baseline["score"]
+                predictions = create_baseline_predictions(base_gt, baseline["score"])
+                scores = evaluator.evaluate(base_gt, predictions)
+                primary_score = scores.get(
+                    dataset_config["primary_metric"], baseline["score"]
                 )
-                
+
                 submission = Submission(
                     id=submission_id,
                     dataset_id=dataset_id,
@@ -537,16 +550,16 @@ async def seed_sample_data(request: Request, db: Session = Depends(get_db)):
                     organization=baseline.get("organization"),
                     predictions=predictions,
                     status=SubmissionStatus.COMPLETED,
-                    primary_score=baseline["score"],
-                    detailed_scores={dataset_config["primary_metric"]: baseline["score"]},
-                    confidence_interval=f"{baseline['score']-0.02:.2f} - {baseline['score']+0.02:.2f}",
+                    primary_score=primary_score,
+                    detailed_scores=scores,
+                    confidence_interval=f"{primary_score-0.02:.2f} - {primary_score+0.02:.2f}",
                     is_internal=True,
-                    created_at=dt.now(),
-                    evaluated_at=dt.now()
+                    created_at=datetime.utcnow(),
+                    evaluated_at=datetime.utcnow(),
                 )
                 db.add(submission)
                 submissions_added += 1
-            
+
             db.commit()
         
         return SuccessResponse(
@@ -569,61 +582,54 @@ async def import_from_huggingface(
     config: str = "default",
     split: str = "test",
     num_samples: int = 100,
+    leaderboard_dataset_id: Optional[str] = None,
+    display_name: Optional[str] = None,
+    recipe_limit: Optional[int] = None,
     db: Session = Depends(get_db)
 ):
     """
     Import a dataset from HuggingFace Hub
-    
+
     Args:
-        dataset_name: HuggingFace dataset identifier (e.g., "ag_news")
-        config: Dataset configuration/subset
+        dataset_name: HuggingFace dataset identifier (e.g. "nyu-mll/glue", "ag_news")
+        config: Dataset configuration/subset (e.g. "sst2")
         split: Dataset split (train/validation/test)
-        num_samples: Number of samples to import
+        num_samples: Row cap for heuristic imports; for registered recipes, use recipe_limit
+        leaderboard_dataset_id: Optional primary key (e.g. hf_glue_sst2_validation)
+        display_name: Optional dataset display name
+        recipe_limit: For recipes only: None uses num_samples; 0 imports the full split
     """
     try:
         from hf_importer import HuggingFaceImporter
-        
-        # Import from HuggingFace
+
         importer = HuggingFaceImporter()
-        dataset_data = importer.import_dataset(dataset_name, config, split, num_samples)
-        
+        dataset_data = importer.import_dataset_with_options(
+            dataset_name,
+            config,
+            split,
+            num_samples=num_samples,
+            leaderboard_dataset_id=leaderboard_dataset_id,
+            display_name=display_name,
+            recipe_limit=recipe_limit,
+        )
+
         if not dataset_data:
             raise HTTPException(status_code=400, detail="Failed to import dataset from HuggingFace")
-        
-        # Check if dataset already exists
-        existing = db.query(Dataset).filter(Dataset.name == dataset_data["name"]).first()
-        if existing:
-            raise HTTPException(status_code=400, detail="Dataset already exists")
-        
-        # Create dataset
-        dataset_id = str(uuid.uuid4())
-        # Avoid passing task_type/name/num_examples twice (from **dataset_data and explicit args)
-        filtered_data = {
-            k: v
-            for k, v in dataset_data.items()
-            if k not in {"name", "task_type", "num_examples"}
-        }
-        dataset = Dataset(
-            id=dataset_id,
-            **filtered_data,
-            name=dataset_data["name"],
-            task_type=TaskType(dataset_data["task_type"]),
-            num_examples=len(dataset_data["ground_truth"])
-        )
-        
-        db.add(dataset)
-        db.commit()
-        db.refresh(dataset)
-        
+
+        try:
+            dataset = persist_imported_dataset(db, dataset_data)
+        except DatasetImportError as e:
+            raise HTTPException(status_code=400, detail=str(e))
+
         return SuccessResponse(
             message=f"Successfully imported {dataset_name} from HuggingFace",
             data={
-                "dataset_id": dataset_id,
-                "name": dataset_data["name"],
-                "num_examples": len(dataset_data["ground_truth"])
-            }
+                "dataset_id": dataset.id,
+                "name": dataset.name,
+                "num_examples": len(dataset.ground_truth),
+            },
         )
-        
+
     except HTTPException:
         raise
     except Exception as e:

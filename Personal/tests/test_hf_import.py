@@ -57,10 +57,15 @@ def test_hf_import_endpoint_creates_dataset(client: FastAPITestClient, monkeypat
     """
     from hf_importer import HuggingFaceImporter
 
-    def fake_import_dataset(self, dataset_name: str, config: str = "default", split: str = "test", num_samples: int = 100):
+    def fake_import_dataset_with_options(self, dataset_name: str, config: str = "default", split: str = "test", num_samples: int = 100, **kwargs):
         return _fake_hf_dataset()
 
-    monkeypatch.setattr(HuggingFaceImporter, "import_dataset", fake_import_dataset, raising=True)
+    monkeypatch.setattr(
+        HuggingFaceImporter,
+        "import_dataset_with_options",
+        fake_import_dataset_with_options,
+        raising=True,
+    )
 
     resp = client.post(
         "/api/admin/import-huggingface",

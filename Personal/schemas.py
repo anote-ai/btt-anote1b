@@ -72,7 +72,10 @@ class SubmissionCreate(BaseModel):
     model_name: str = Field(..., description="Name of the model")
     model_version: Optional[str] = Field(None, description="Version of the model")
     organization: Optional[str] = Field(None, description="Organization submitting the model")
-    predictions: List[Dict[str, Any]] = Field(..., description="Model predictions")
+    predictions: List[Dict[str, Any]] = Field(
+        ...,
+        description="Model predictions: one object per ground-truth example, unique ids matching dataset ground_truth ids",
+    )
     is_internal: bool = Field(False, description="Whether this is an internal submission")
     submission_metadata: Optional[Dict[str, Any]] = Field(None, description="Additional metadata")
     

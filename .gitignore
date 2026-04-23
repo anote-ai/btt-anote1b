@@ -28,8 +28,11 @@ wheels/
 *.sqlite
 *.sqlite3
 
-# Environment
+# Environment (never commit secrets; use .env.example as template)
 .env
+.env.*
+!.env.example
+!**/.env.example
 .venv
 .venv_ready
 

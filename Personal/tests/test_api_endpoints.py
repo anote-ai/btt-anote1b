@@ -230,7 +230,21 @@ class TestSubmissionEndpoints:
         }
         response = client.post("/api/submissions", json=submission)
         assert response.status_code == 404
-    
+
+    def test_submit_predictions_rejects_incomplete_coverage(self, sample_dataset):
+        """REST submissions must include every ground-truth example id."""
+        submission = {
+            "dataset_id": sample_dataset.id,
+            "model_name": "Partial Model",
+            "predictions": [
+                {"id": "1", "prediction": "positive"},
+                {"id": "2", "prediction": "negative"},
+            ],
+        }
+        response = client.post("/api/submissions", json=submission)
+        assert response.status_code == 400
+        assert "exactly one entry" in response.json()["detail"].lower()
+
     def test_list_submissions(self, sample_dataset):
         """Should list all submissions"""
         response = client.get("/api/submissions")

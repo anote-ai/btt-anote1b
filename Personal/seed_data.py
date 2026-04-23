@@ -248,6 +248,18 @@ def create_baseline_predictions(ground_truth, score):
     return predictions
 
 
+def merged_ground_truth_for_sample_config(dataset_config: Dict) -> List[dict]:
+    """
+    Ground-truth rows for a ``SAMPLE_DATASETS`` entry, including any
+    ``extra_ground_truth`` examples merged at seed time (same as ``seed_database``).
+    """
+    base_gt = list(dataset_config["ground_truth"])
+    extra_gt = EXTRA_GROUND_TRUTH_BY_NAME.get(dataset_config["name"])
+    if extra_gt:
+        base_gt.extend(extra_gt)
+    return base_gt
+
+
 def seed_database():
     """Load sample datasets and baseline model scores"""
     init_db()
@@ -267,11 +279,7 @@ def seed_database():
             
             print(f"📊 Creating dataset: {dataset_config['name']}")
 
-            # Merge in any extra ground truth for this dataset name
-            base_gt = list(dataset_config["ground_truth"])
-            extra_gt = EXTRA_GROUND_TRUTH_BY_NAME.get(dataset_config["name"])
-            if extra_gt:
-                base_gt.extend(extra_gt)
+            base_gt = merged_ground_truth_for_sample_config(dataset_config)
 
             # Create dataset with expanded ground truth
             dataset_id = str(uuid.uuid4())

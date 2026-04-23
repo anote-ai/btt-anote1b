@@ -2,12 +2,17 @@
 HuggingFace Dataset Importer
 
 Import datasets directly from HuggingFace Hub and convert them to our format.
+
+TODO: Hugging Face Inference API / transformers pipeline runner (predictions JSON only).
+TODO: Additional recipes (SQuAD, CoNLL-2003) and background jobs for large evals.
 """
 from typing import Dict, List, Optional
 import requests
 import json
 
 from datasets import load_dataset
+
+from hf_dataset_recipes import try_recipe_import
 
 
 class HuggingFaceImporter:
@@ -163,39 +168,79 @@ class HuggingFaceImporter:
         }
     
     @classmethod
-    def import_dataset(cls, dataset_name: str, config: str = "default", split: str = "test", num_samples: int = 100) -> Optional[Dict]:
+    def import_dataset(
+        cls,
+        dataset_name: str,
+        config: str = "default",
+        split: str = "test",
+        num_samples: int = 100,
+    ) -> Optional[Dict]:
+        """Backward-compatible import (random UUID id assigned at persist time unless recipe sets id)."""
+        return cls.import_dataset_with_options(
+            dataset_name,
+            config,
+            split,
+            num_samples=num_samples,
+        )
+
+    @classmethod
+    def import_dataset_with_options(
+        cls,
+        dataset_name: str,
+        config: str = "default",
+        split: str = "test",
+        num_samples: int = 100,
+        leaderboard_dataset_id: Optional[str] = None,
+        display_name: Optional[str] = None,
+        recipe_limit: Optional[int] = None,
+    ) -> Optional[Dict]:
         """
-        Import a dataset from HuggingFace
-        
+        Import a dataset from HuggingFace.
+
+        Registered recipes (e.g. nyu-mll/glue + sst2) use hf_dataset_recipes and return
+        stable ids + string labels. recipe_limit: None uses num_samples; 0 means full split.
+
         Args:
-            dataset_name: HuggingFace dataset identifier
-            config: Dataset configuration
-            split: Dataset split
-            num_samples: Number of samples to import
-            
-        Returns:
-            Dataset in leaderboard format
+            recipe_limit: For recipes only. None → cap at num_samples. 0 → all rows in split.
         """
-        print(f"📥 Importing {dataset_name} from HuggingFace...")
-        
-        # Fetch dataset info
+        print(f"📥 Importing {dataset_name} (config={config}, split={split}) from HuggingFace...")
+
         info = cls.get_dataset_info(dataset_name)
         if info:
             print(f"   Found dataset: {info.get('dataset_info', {}).get('description', 'No description')[:100]}")
-        
-        # Sample dataset rows
+
+        if recipe_limit == 0:
+            eff_limit = None
+        elif recipe_limit is not None:
+            eff_limit = recipe_limit
+        else:
+            eff_limit = num_samples
+
+        recipe_payload = try_recipe_import(
+            dataset_name,
+            config,
+            split,
+            limit=eff_limit,
+            leaderboard_dataset_id=leaderboard_dataset_id,
+            display_name=display_name,
+        )
+        if recipe_payload:
+            n = len(recipe_payload["ground_truth"])
+            print(f"   ✓ Recipe import: {n} examples ({recipe_payload.get('task_type')})")
+            return recipe_payload
+
         rows = cls.sample_dataset(dataset_name, config, split, num_samples)
-        
         if not rows:
             print(f"   ❌ Failed to fetch dataset samples")
             return None
-        
+
         print(f"   ✓ Fetched {len(rows)} samples")
-        
-        # Convert to our format
         dataset = cls.convert_to_leaderboard_format(dataset_name, rows)
+        if leaderboard_dataset_id:
+            dataset["id"] = leaderboard_dataset_id
+        if display_name:
+            dataset["name"] = display_name
         print(f"   ✓ Converted to {dataset['task_type']} format")
-        
         return dataset
 
 
