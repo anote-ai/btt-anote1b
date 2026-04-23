@@ -21,6 +21,7 @@ from evaluation_service import evaluate_submission
 from cache import cached_leaderboard, invalidate_leaderboard_cache, get_cache_stats
 from rate_limiter import setup_rate_limiting, RATE_LIMITS
 from logger import logger, log_api_request, log_evaluation, log_error
+from legacy_compat import router as legacy_router
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -48,6 +49,8 @@ app.add_middleware(
 
 # Setup rate limiting
 limiter = setup_rate_limiting(app)
+
+app.include_router(legacy_router)
 
 
 @app.on_event("startup")

@@ -17,6 +17,7 @@ class TaskType(enum.Enum):
     DOCUMENT_QA = "document_qa"
     LINE_QA = "line_qa"
     RETRIEVAL = "retrieval"
+    TRANSLATION = "translation"
 
 
 class SubmissionStatus(enum.Enum):

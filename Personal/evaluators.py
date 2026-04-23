@@ -525,6 +525,52 @@ class RetrievalEvaluator(BaseEvaluator):
         }
 
 
+
+
+class TranslationEvaluator(BaseEvaluator):
+    """BLEU-based MT evaluation; bertscore mirrors bleu unless bert_score is installed."""
+
+    def evaluate(self, ground_truth: List[Dict], predictions: List[Dict]) -> Dict[str, float]:
+        pred_map = {p["id"]: p["prediction"] for p in predictions}
+        try:
+            from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
+
+            smooth = SmoothingFunction().method1
+        except Exception:
+            sentence_bleu = None
+            smooth = None
+
+        bleu_scores: List[float] = []
+        for gt in ground_truth:
+            gt_id = gt["id"]
+            if gt_id not in pred_map:
+                continue
+            ref = str(gt.get("answer", "")).split()
+            hyp = str(pred_map[gt_id]).split()
+            if not ref or not hyp:
+                continue
+            if sentence_bleu is not None:
+                bleu_scores.append(float(sentence_bleu([ref], hyp, smoothing_function=smooth)))
+            else:
+                sr, sh = set(ref), set(hyp)
+                bleu_scores.append(len(sr & sh) / len(sr | sh) if (sr | sh) else 0.0)
+
+        bleu = float(np.mean(bleu_scores)) if bleu_scores else 0.0
+        bleu_r = round(bleu, 4)
+        out: Dict[str, float] = {"bleu": bleu_r, "bertscore": bleu_r}
+        try:
+            from bert_score import score as bert_score_fn
+
+            refs = [str(gt.get("answer", "")) for gt in ground_truth if gt["id"] in pred_map]
+            hyps = [str(pred_map[gt["id"]]) for gt in ground_truth if gt["id"] in pred_map]
+            if refs and hyps and len(refs) == len(hyps):
+                _, _, f1 = bert_score_fn(hyps, refs, lang="en", verbose=False)
+                out["bertscore"] = round(float(f1.mean().item()), 4)
+        except Exception:
+            pass
+        return out
+
+
 def get_evaluator(task_type: str) -> BaseEvaluator:
     """Factory function to get appropriate evaluator for task type"""
     evaluators = {
@@ -533,6 +579,7 @@ def get_evaluator(task_type: str) -> BaseEvaluator:
         "document_qa": QAEvaluator(),
         "line_qa": QAEvaluator(),
         "retrieval": RetrievalEvaluator(),
+        "translation": TranslationEvaluator(),
     }
     
     evaluator = evaluators.get(task_type)
