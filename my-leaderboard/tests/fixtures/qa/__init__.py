@@ -1,2 +1,0 @@
-"""Question answering test fixtures"""
-

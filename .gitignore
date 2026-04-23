@@ -55,7 +55,6 @@ frontend.log
 htmlcov/
 
 # Documentation
-*.md
 
 # Scripts
 *.sh

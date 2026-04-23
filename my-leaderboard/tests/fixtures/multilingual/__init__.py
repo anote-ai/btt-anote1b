@@ -1,2 +1,0 @@
-"""Multilingual test fixtures"""
-
