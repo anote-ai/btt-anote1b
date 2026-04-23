@@ -1,5 +1,7 @@
 # CLAUDE.md — Anote Model Leaderboard
 
+> **Product note:** The live leaderboard stack lives in **`../Personal/`** (FastAPI + Vite). Treat this `Company/` tree as **reference / legacy** (Flask + CRA). Prefer extending Personal unless you are porting a specific artifact (e.g. CSV benchmark files) into it.
+
 This file provides AI assistants with the context needed to work effectively in this repository.
 
 ---
