@@ -81,6 +81,36 @@ Uses CRA’s `npm start` on ~3000. Point the env at Personal’s API if you rely
 | `DATABASE_URL` | SQLAlchemy URL; default `sqlite:///./leaderboard.db` |
 | Redis-related | Used by `cache.py` when configured for leaderboard caching |
 | `FORCE_RESEED` | When `true`, `init_db.py` clears datasets/submissions then re-seeds |
+| `HF_TOKEN` | Optional Hugging Face Hub token (higher rate limits / private models when using `transformers` or `datasets` downloads) |
+
+## Hugging Face: GLUE SST-2 import and local model runner
+
+Use the **same** `DATABASE_URL` / working directory (`Personal/`) for import and runner so `leaderboard.db` contains the dataset.
+
+**1) Optional ML deps** (not in default `requirements.txt`; keeps CI light):
+
+```bash
+pip install -r requirements-hf-inference.txt
+```
+
+**2) Import validation split** (creates `Dataset.id` e.g. `hf_glue_sst2_validation`; required before the runner on a fresh DB):
+
+```bash
+PYTHONPATH=. python scripts/import_hf_dataset.py \
+  --dataset nyu-mll/glue --config sst2 --split validation \
+  --dataset-id hf_glue_sst2_validation --limit 200
+```
+
+**3) Run a sentiment model** (writes a `Submission` and calls `evaluate_submission`; scores are never hand-authored):
+
+```bash
+PYTHONPATH=. python scripts/run_hf_model_on_dataset.py \
+  --dataset-id hf_glue_sst2_validation \
+  --model-id distilbert/distilbert-base-uncased-finetuned-sst-2-english \
+  --limit 200 --batch-size 16
+```
+
+Set **`HF_TOKEN`** if Hub warns about unauthenticated requests. Tests under `tests/test_hf_runner_inference.py` **mock** the pipeline and do **not** require `torch`/`transformers`.
 
 ## Tests and CI
 
@@ -88,6 +118,13 @@ Uses CRA’s `npm start` on ~3000. Point the env at Personal’s API if you rely
   `PYTHONPATH=. pytest -q standalone_tests/`  
   (Legacy API contract tests; CI runs this.)
 - Broader suite under `Personal/tests/` may need consistent `PYTHONPATH` and DB fixtures; see `tests/conftest.py`.
+- Default CI installs [`Personal/requirements.txt`](Personal/requirements.txt) only (no `torch`). HF runner tests mock `transformers.pipeline`.
+
+## Roadmap (benchmark / infra)
+
+- More **HF dataset recipes** (e.g. SQuAD for QA, CoNLL-style NER) alongside [`Personal/hf_dataset_recipes.py`](Personal/hf_dataset_recipes.py).
+- **Hugging Face Inference API** path for models without local GPU / torch.
+- **Background jobs** (queue + worker) for long-running imports and full-benchmark evaluations.
 
 ## Key files for agents
 

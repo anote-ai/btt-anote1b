@@ -1,0 +1,4 @@
+# Optional: Hugging Face local inference (scripts/run_hf_model_on_dataset.py)
+# pip install -r requirements-hf-inference.txt
+transformers>=4.36.0
+torch>=2.0.0
