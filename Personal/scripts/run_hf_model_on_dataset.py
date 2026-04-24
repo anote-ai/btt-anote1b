@@ -40,7 +40,7 @@ def main() -> None:
 
     os.chdir(ROOT)
 
-    from database import SessionLocal, init_db
+    from database import SessionLocal, init_db, DATABASE_URL
     from models import Dataset, Submission, SubmissionStatus, TaskType
     from evaluation_service import evaluate_submission
     from hf_runner_inference import (
@@ -59,6 +59,22 @@ def main() -> None:
         ds = db.query(Dataset).filter(Dataset.id == args.dataset_id).first()
         if not ds:
             print(f"Dataset not found: {args.dataset_id!r}", file=sys.stderr)
+            print(f"DATABASE_URL={DATABASE_URL!r}", file=sys.stderr)
+            others = db.query(Dataset).order_by(Dataset.id).limit(30).all()
+            if others:
+                print("Existing datasets in this database (id — name):", file=sys.stderr)
+                for row in others:
+                    tt = row.task_type.value if row.task_type else "?"
+                    print(f"  {row.id!r} — {row.name!r} ({tt})", file=sys.stderr)
+            else:
+                print("No datasets in this database yet.", file=sys.stderr)
+            print(
+                "Import SST-2 into the same DB first, e.g.\n"
+                "  PYTHONPATH=. python scripts/import_hf_dataset.py \\\n"
+                "    --dataset nyu-mll/glue --config sst2 --split validation \\\n"
+                "    --dataset-id hf_glue_sst2_validation --limit 200",
+                file=sys.stderr,
+            )
             sys.exit(1)
         if ds.task_type != TaskType.TEXT_CLASSIFICATION:
             print(

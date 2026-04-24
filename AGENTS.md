@@ -112,6 +112,8 @@ PYTHONPATH=. python scripts/run_hf_model_on_dataset.py \
 
 Set **`HF_TOKEN`** if Hub warns about unauthenticated requests. Tests under `tests/test_hf_runner_inference.py` **mock** the pipeline and do **not** require `torch`/`transformers`.
 
+For **more splits, models, recipes, and how evaluation is wired**, see [`Personal/HF_MODELS_SPLITS_AND_EVALUATION.md`](Personal/HF_MODELS_SPLITS_AND_EVALUATION.md).
+
 ## Tests and CI
 
 - From `Personal/`, with deps installed:  
