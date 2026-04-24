@@ -11,6 +11,10 @@ from sqlalchemy.pool import StaticPool
 import database as dbmod
 from models import Base
 
+_orig_engine = dbmod.engine
+_orig_session_local = dbmod.SessionLocal
+_orig_init_db = dbmod.init_db
+
 _test_engine = create_engine(
     "sqlite://",
     connect_args={"check_same_thread": False},
@@ -31,6 +35,16 @@ if "main" in sys.modules:
     importlib.reload(sys.modules["main"])
 from main import app
 from fastapi.testclient import TestClient
+
+
+@pytest.fixture(scope="module", autouse=True)
+def _restore_real_database_after_legacy_tests():
+    """Undo in-memory patch so later test modules use the normal DB module binding."""
+    yield
+    dbmod.engine = _orig_engine
+    dbmod.SessionLocal = _orig_session_local
+    dbmod.init_db = _orig_init_db
+    _orig_init_db()
 
 
 @pytest.fixture

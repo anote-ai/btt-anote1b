@@ -10,7 +10,7 @@ from fastapi import APIRouter, Body, Depends, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
-from database import SessionLocal, get_db
+from database import get_db
 from models import Dataset, Submission, SubmissionStatus, TaskType
 from evaluation_service import evaluate_submission
 from cache import invalidate_leaderboard_cache
@@ -217,6 +217,8 @@ def legacy_submit_model(
     invalidate_leaderboard_cache(ds.id)
 
     evaluate_submission(submission_id)
+    from database import SessionLocal
+
     sdb = SessionLocal()
     try:
         sub_final = sdb.query(Submission).filter(Submission.id == submission_id).first()

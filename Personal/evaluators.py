@@ -4,10 +4,11 @@ Evaluation metrics for different task types
 Each evaluator computes metrics comparing predictions against ground truth.
 Designed to prevent metric gaming by supporting diverse evaluation strategies.
 """
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Tuple
 from collections import Counter
 import re
 import numpy as np
+from sklearn.metrics import matthews_corrcoef
 
 
 class BaseEvaluator:
@@ -29,6 +30,32 @@ class BaseEvaluator:
 
 class TextClassificationEvaluator(BaseEvaluator):
     """Evaluator for text classification tasks"""
+
+    @staticmethod
+    def _classification_label_pairs(
+        ground_truth: List[Dict],
+        pred_map: Dict[str, Any],
+    ) -> Tuple[List[str], List[str]]:
+        """Parallel normalized labels for examples that have a prediction (same coverage as scoring loop)."""
+        y_true: List[str] = []
+        y_pred: List[str] = []
+        for gt in ground_truth:
+            gt_id = gt["id"]
+            true_label_raw = gt["answer"]
+            if gt_id not in pred_map:
+                continue
+            pred_label_raw = pred_map[gt_id]
+            if isinstance(true_label_raw, list):
+                true_norm = str(true_label_raw[0]).strip().lower() if true_label_raw else ""
+            else:
+                true_norm = str(true_label_raw).strip().lower()
+            if isinstance(pred_label_raw, list):
+                pred_norm = str(pred_label_raw[0]).strip().lower() if pred_label_raw else ""
+            else:
+                pred_norm = str(pred_label_raw).strip().lower()
+            y_true.append(true_norm)
+            y_pred.append(pred_norm)
+        return y_true, y_pred
     
     def evaluate(self, ground_truth: List[Dict], predictions: List[Dict]) -> Dict[str, float]:
         # Create lookup for predictions
@@ -121,19 +148,15 @@ class TextClassificationEvaluator(BaseEvaluator):
             recalls_per_class.append(cls_recall)
         balanced_accuracy = sum(recalls_per_class) / len(recalls_per_class) if recalls_per_class else 0
         
-        # Matthews Correlation Coefficient (MCC)
-        # For binary classification, this is more informative than accuracy
-        if len(all_classes) == 2:
-            tp = total_tp
-            tn = total - total_tp - total_fp - total_fn  # True negatives
-            fp = total_fp
-            fn = total_fn
-            
-            mcc_numerator = (tp * tn) - (fp * fn)
-            mcc_denominator = np.sqrt((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn))
-            mcc = mcc_numerator / mcc_denominator if mcc_denominator > 0 else 0
-        else:
-            mcc = None
+        # Matthews correlation: aligned (y_true, y_pred) with same normalization as accuracy.
+        mcc_y_true, mcc_y_pred = self._classification_label_pairs(ground_truth, pred_map)
+        mcc: Any = None
+        if mcc_y_true:
+            uniq = set(mcc_y_true) | set(mcc_y_pred)
+            if len(uniq) >= 2:
+                mcc = float(matthews_corrcoef(mcc_y_true, mcc_y_pred))
+            else:
+                mcc = 0.0
         
         # Cohen's Kappa - agreement beyond chance
         p_observed = accuracy
@@ -528,7 +551,7 @@ class RetrievalEvaluator(BaseEvaluator):
 
 
 class TranslationEvaluator(BaseEvaluator):
-    """BLEU-based MT evaluation; bertscore mirrors bleu unless bert_score is installed."""
+    """BLEU-based MT evaluation; `bertscore` is set only when the optional `bert_score` package runs."""
 
     def evaluate(self, ground_truth: List[Dict], predictions: List[Dict]) -> Dict[str, float]:
         pred_map = {p["id"]: p["prediction"] for p in predictions}
@@ -557,7 +580,7 @@ class TranslationEvaluator(BaseEvaluator):
 
         bleu = float(np.mean(bleu_scores)) if bleu_scores else 0.0
         bleu_r = round(bleu, 4)
-        out: Dict[str, float] = {"bleu": bleu_r, "bertscore": bleu_r}
+        out: Dict[str, float] = {"bleu": bleu_r}
         try:
             from bert_score import score as bert_score_fn
 
@@ -567,7 +590,7 @@ class TranslationEvaluator(BaseEvaluator):
                 _, _, f1 = bert_score_fn(hyps, refs, lang="en", verbose=False)
                 out["bertscore"] = round(float(f1.mean().item()), 4)
         except Exception:
-            pass
+            out["bertscore_unavailable"] = bleu_r
         return out
 
 

@@ -74,7 +74,17 @@ class TestHealthCheck:
 
 class TestDatasetEndpoints:
     """Test dataset CRUD operations"""
-    
+
+    def test_submission_format(self, sample_dataset):
+        r = client.get(f"/api/datasets/{sample_dataset.id}/submission-format")
+        assert r.status_code == 200
+        data = r.json()
+        assert data["dataset_id"] == sample_dataset.id
+        assert data["task_type"] == "text_classification"
+        assert "prediction_item_shape" in data
+        assert "example" in data
+        assert data["example"]["predictions"][0]["prediction"] == "positive"
+
     def test_list_datasets(self, sample_dataset):
         """Should list all datasets"""
         response = client.get("/api/datasets")

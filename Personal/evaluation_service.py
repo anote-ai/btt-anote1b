@@ -14,7 +14,6 @@ from __future__ import annotations
 
 from typing import List, Dict, Any, Optional
 
-from database import SessionLocal
 from models import Submission, Dataset, SubmissionStatus
 from evaluators import get_evaluator
 from datetime import datetime
@@ -142,8 +141,12 @@ def evaluate_submission(submission_id: str):
     3. Computes scores and confidence intervals
     4. Updates the submission with results
     """
+    # Import here so tests (and rare hot-reloads) that patch ``database.SessionLocal`` take effect.
+    from database import SessionLocal
+
     db = SessionLocal()
-    
+    submission: Optional[Submission] = None
+
     try:
         # Get submission
         submission = db.query(Submission).filter(Submission.id == submission_id).first()
@@ -219,10 +222,10 @@ def evaluate_submission(submission_id: str):
         invalidate_leaderboard_cache(dataset.id)
         
     except Exception as e:
-        # Mark submission as failed
-        submission.status = SubmissionStatus.FAILED
-        submission.error_message = str(e)
-        db.commit()
+        if submission is not None:
+            submission.status = SubmissionStatus.FAILED
+            submission.error_message = str(e)
+            db.commit()
         
         print(f"✗ Submission {submission_id} evaluation failed: {e}")
         traceback.print_exc()

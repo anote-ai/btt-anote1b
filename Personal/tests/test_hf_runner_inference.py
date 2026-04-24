@@ -10,7 +10,8 @@ PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_DIR, os.pardir))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from database import SessionLocal, init_db
+import database
+from database import init_db
 from seed_data import clear_database
 from models import Submission, SubmissionStatus
 from evaluation_service import evaluate_submission
@@ -122,7 +123,7 @@ def test_evaluate_submission_uses_evaluator_not_hand_scores():
         "additional_metrics": ["f1", "precision", "recall"],
         "ground_truth": gt,
     }
-    db = SessionLocal()
+    db = database.SessionLocal()
     try:
         ds = persist_imported_dataset(db, payload)
         id_sentences = ground_truth_to_id_sentences(gt, require_sentence_key=True)

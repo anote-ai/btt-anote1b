@@ -8,7 +8,8 @@ coarse and more statistically meaningful, we also have additional synthetic
 examples defined in ``extra_ground_truth.py`` which are merged in at seed
 time.
 """
-from database import SessionLocal, init_db
+import database
+from database import init_db
 from models import Dataset, Submission, TaskType, SubmissionStatus
 from evaluators import get_evaluator
 from datetime import datetime
@@ -263,7 +264,7 @@ def merged_ground_truth_for_sample_config(dataset_config: Dict) -> List[dict]:
 def seed_database():
     """Load sample datasets and baseline model scores"""
     init_db()
-    db = SessionLocal()
+    db = database.SessionLocal()
     
     try:
         print("\n" + "="*60)
@@ -358,7 +359,7 @@ def seed_database():
 
 def clear_database():
     """Clear all data from the database"""
-    db = SessionLocal()
+    db = database.SessionLocal()
     try:
         print("\n⚠️  Clearing database...")
         db.query(Submission).delete()

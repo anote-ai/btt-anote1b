@@ -8,6 +8,10 @@ Run from repo root:
     --dataset-id hf_glue_sst2_validation --limit 200
 
 Use --limit 0 for the full split (all rows with valid labels).
+
+More recipes (config is usually `default`):
+  --dataset squad --config default --split validation --dataset-id hf_squad_validation
+  --dataset conll2003 --config default --split validation --dataset-id hf_conll2003_validation
 """
 from __future__ import annotations
 

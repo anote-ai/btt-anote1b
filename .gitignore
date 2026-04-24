@@ -57,6 +57,9 @@ frontend.log
 .coverage
 htmlcov/
 
+# OpenAnote UI/materials clone (large nested repo; keep at repo root locally, integrate separately)
+OpenAnote/
+
 # Documentation
 
 # Scripts

@@ -73,7 +73,79 @@ PYTHONPATH=. python scripts/run_hf_model_on_dataset.py \
 
 **Leaderboard `model_name`:** `submission_model_name_from_id` derives a short name from the Hub id (with a special case for DistilBERT SST-2). For new flagship models you may add explicit aliases there for readability.
 
-**Task type:** The runner currently requires **`text_classification`** on the dataset. Other task types need a different runner or pipeline, not this script alone.
+**Task type:** `run_hf_model_on_dataset.py` requires **`text_classification`**. For other tasks, use the matching script below.
+
+### Document QA (SQuAD-style)
+
+**Import** (recipe key `squad` + config `default`):
+
+```bash
+PYTHONPATH=. python scripts/import_hf_dataset.py \
+  --dataset squad --config default --split validation \
+  --dataset-id hf_squad_validation --limit 200
+```
+
+**Run** extractive QA (`question` + `context` must be present on each ground-truth row):
+
+```bash
+PYTHONPATH=. python scripts/run_hf_qa_on_dataset.py \
+  --dataset-id hf_squad_validation \
+  --model-id distilbert-base-cased-distilled-squad \
+  --limit 50
+```
+
+### Named entity recognition (CoNLL-2003)
+
+**Import:**
+
+```bash
+PYTHONPATH=. python scripts/import_hf_dataset.py \
+  --dataset conll2003 --config default --split validation \
+  --dataset-id hf_conll2003_validation --limit 200
+```
+
+**Run** token-classification + aggregated entities:
+
+```bash
+PYTHONPATH=. python scripts/run_hf_ner_on_dataset.py \
+  --dataset-id hf_conll2003_validation \
+  --model-id dslim/bert-base-NER \
+  --limit 50
+```
+
+CoNLL loading may require `trust_remote_code=True` in newer `datasets` versions; upgrade `datasets` or allow remote code per Hugging Face docs if import fails.
+
+---
+
+## Discover submission shape (API)
+
+`GET /api/datasets/{dataset_id}/submission-format` returns `prediction_item_shape`, an **`example`** payload for `POST /api/submissions`, and notes. Use it from CLIs or notebooks before building `predictions`.
+
+---
+
+## User predictions from JSON, HF Inference API, or dataset exports
+
+### Submit from a JSON file
+
+`scripts/submit_predictions_from_file.py` loads a JSON **array** of `{ "id", "prediction" }`, checks **exact id coverage** against the dataset in the DB, creates a `Submission`, and calls **`evaluate_submission`** (same scoring path as the API).
+
+```bash
+PYTHONPATH=. python scripts/submit_predictions_from_file.py \
+  --dataset-id hf_glue_sst2_validation \
+  --predictions-file ./my_preds.json \
+  --model-name notebook_baseline
+```
+
+Optional `--metadata-file` (JSON object) is stored in `submission_metadata`.
+
+### Adapters (`hf_prediction_adapters.py`)
+
+Pure helpers (no model download):
+
+- **`inference_api_classification_to_prediction`** — one HF Inference API row such as `{"label": "POSITIVE", "score": 0.99}` → leaderboard `prediction` string (aligned with SST-2-style normalization).
+- **`rows_to_predictions`** — tabular JSON / exported rows with `--id-field` / `--prediction-field`; optional `label_normalization="classification"`.
+
+Use these in notebooks to turn Hub responses into the canonical list, then **`POST /api/submissions`** or **`submit_predictions_from_file.py`**.
 
 ---
 
@@ -93,10 +165,10 @@ Today, first-class HF imports beyond generic sampling are driven by **recipes** 
 
 1. Implement a builder that returns a payload dict with keys aligned to **`persist_imported_dataset`** (`id`, `name`, `task_type`, `primary_metric`, `additional_metrics`, `ground_truth`, …).
 2. Register it in **`RECIPE_IMPORTERS`** keyed by `(hf_dataset_id.lower(), config.lower())`.
-3. Ensure each ground-truth item has stable **`id`** and, for this runner, a **`sentence`** field if you want to use **`run_hf_model_on_dataset.py`** unchanged.
+3. Ensure each ground-truth item has stable **`id`** and task-specific input fields (e.g. **`sentence`** for SST-2 classification; **`question`** + **`context`** for SQuAD; **`text`** for CoNLL NER).
 4. Import via **`import_hf_dataset.py`**; if the recipe sets a default `id`, you can still override with **`--dataset-id`**.
 
-For **non–text-classification** tasks, you will need a dedicated inference script (or extend the runner) and an evaluator path that already exists or that you add in **`evaluators.py`**.
+Registered recipes today: **GLUE SST-2** (`nyu-mll/glue` / `sst2`), **SQuAD** (`squad` / `default`), **CoNLL-2003** (`conll2003` / `default`). Add more by extending **`RECIPE_IMPORTERS`** in **`hf_dataset_recipes.py`**.
 
 ---
 
@@ -116,10 +188,14 @@ For **non–text-classification** tasks, you will need a dedicated inference scr
 | File | Purpose |
 |------|---------|
 | `scripts/import_hf_dataset.py` | CLI import |
-| `scripts/run_hf_model_on_dataset.py` | CLI HF inference + submission + evaluate |
-| `hf_dataset_recipes.py` | SST-2 (and future) recipe payloads |
+| `scripts/run_hf_model_on_dataset.py` | Text classification (sentiment) runner |
+| `scripts/run_hf_qa_on_dataset.py` | Document QA runner |
+| `scripts/run_hf_ner_on_dataset.py` | NER runner |
+| `scripts/submit_predictions_from_file.py` | Load predictions JSON → submission → evaluate |
+| `hf_dataset_recipes.py` | Recipe payloads (SST-2, SQuAD, CoNLL-2003, …) |
+| `hf_prediction_adapters.py` | HF API / tabular row → prediction dict helpers |
 | `hf_importer.py` | Routes to recipe or generic HF sampling |
-| `hf_runner_inference.py` | Pipeline batching, label normalization |
+| `hf_runner_inference.py` | Deps check, batching, label normalization |
 | `dataset_import.py` | `persist_imported_dataset` |
 | `evaluation_service.py` | `evaluate_submission` orchestration |
 | `evaluators.py` | Task-specific metrics |

@@ -14,6 +14,7 @@ from evaluators import (
     NEREvaluator,
     QAEvaluator,
     RetrievalEvaluator,
+    TranslationEvaluator,
     get_evaluator,
 )
 
@@ -65,15 +66,39 @@ def test_text_classification_evaluator_binary_perfect_and_partial():
     assert perfect_scores["balanced_accuracy"] == pytest.approx(1.0)
     assert perfect_scores["num_classes"] == 2
     assert perfect_scores["total_predictions"] == 4
-    # MCC is only defined/used for certain configurations; just ensure it is present
-    # and between -1 and 1 if provided.
-    if "matthews_corr" in perfect_scores:
-        assert -1.0 <= perfect_scores["matthews_corr"] <= 1.0
+    assert perfect_scores["matthews_corr"] == pytest.approx(1.0)
+
+    inverted_preds = [
+        {"id": "1", "prediction": "negative"},
+        {"id": "2", "prediction": "negative"},
+        {"id": "3", "prediction": "positive"},
+        {"id": "4", "prediction": "positive"},
+    ]
+    inverted_scores = evaluator.evaluate(ground_truth, inverted_preds)
+    assert inverted_scores["matthews_corr"] == pytest.approx(-1.0)
 
     # Partial case should be strictly worse than perfect
     assert 0.0 < partial_scores["accuracy"] < 1.0
     assert 0.0 < partial_scores["f1"] < 1.0
     assert partial_scores["accuracy"] < perfect_scores["accuracy"]
+    assert partial_scores["matthews_corr"] > -1.0 and partial_scores["matthews_corr"] < 1.0
+
+
+def test_text_classification_mcc_high_accuracy_nonzero():
+    """Regression: MCC must not collapse to 0 when accuracy is high (binary)."""
+    evaluator = TextClassificationEvaluator()
+    ground_truth = [{"id": str(i), "answer": "positive" if i % 2 == 0 else "negative"} for i in range(200)]
+    preds = [
+        {"id": str(i), "prediction": ("positive" if i % 2 == 0 else "negative")}
+        for i in range(200)
+    ]
+    # Flip ~9% of labels (still ~0.91 accuracy)
+    for i in range(0, 200, 11):
+        cur = preds[i]["prediction"]
+        preds[i] = {"id": str(i), "prediction": "negative" if cur == "positive" else "positive"}
+    scores = evaluator.evaluate(ground_truth, preds)
+    assert scores["accuracy"] > 0.85
+    assert scores["matthews_corr"] > 0.5
 
 
 def test_ner_evaluator_exact_and_partial_matches():
@@ -161,6 +186,18 @@ def test_qa_evaluator_exact_match_and_f1_multiple_answers():
 
     # BLEU-style score should correlate with token overlap
     assert imperfect_scores["bleu"] <= perfect_scores["bleu"]
+
+
+def test_translation_evaluator_bleu_and_bertscore_keys():
+    evaluator = TranslationEvaluator()
+    ground_truth = [{"id": "1", "answer": "hello world"}]
+    preds = [{"id": "1", "prediction": "hello world"}]
+    scores = evaluator.evaluate(ground_truth, preds)
+    assert "bleu" in scores
+    has_real = "bertscore" in scores
+    has_proxy = "bertscore_unavailable" in scores
+    assert has_real or has_proxy
+    assert not (has_real and has_proxy)
 
 
 def test_retrieval_evaluator_basic_metrics():

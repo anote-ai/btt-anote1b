@@ -13,7 +13,8 @@ PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_DIR, os.pardir))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from database import init_db, SessionLocal
+import database
+from database import init_db
 from seed_data import clear_database
 from models import Submission, SubmissionStatus
 from evaluators import get_evaluator
@@ -105,7 +106,7 @@ def test_persist_duplicate_id_errors():
         "additional_metrics": ["f1"],
         "ground_truth": gt,
     }
-    db = SessionLocal()
+    db = database.SessionLocal()
     try:
         persist_imported_dataset(db, payload)
         with pytest.raises(DatasetImportError, match="already exists"):
@@ -134,7 +135,7 @@ def test_submission_scores_match_evaluator_not_hand_authored():
         "additional_metrics": ["f1", "precision", "recall"],
         "ground_truth": gt,
     }
-    db = SessionLocal()
+    db = database.SessionLocal()
     try:
         ds = persist_imported_dataset(db, payload)
         predictions = [
@@ -188,7 +189,7 @@ def test_majority_baseline_matches_evaluator(monkeypatch):
         "additional_metrics": ["f1", "precision", "recall"],
         "ground_truth": gt,
     }
-    db = SessionLocal()
+    db = database.SessionLocal()
     try:
         ds = persist_imported_dataset(db, payload)
         maj = "positive"
@@ -232,7 +233,7 @@ def test_leaderboard_entry_matches_evaluator(client):
         "additional_metrics": ["f1", "precision", "recall"],
         "ground_truth": gt,
     }
-    db = SessionLocal()
+    db = database.SessionLocal()
     ds_id = None
     try:
         ds = persist_imported_dataset(db, payload)

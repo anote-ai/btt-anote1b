@@ -215,6 +215,55 @@ async def get_dataset_questions(
     }
 
 
+@app.get("/api/datasets/{dataset_id}/submission-format")
+async def get_submission_format(dataset_id: str, db: Session = Depends(get_db)):
+    """
+    Expected shape of `predictions` for `POST /api/submissions` for this dataset.
+    """
+    dataset = db.query(Dataset).filter(Dataset.id == dataset_id).first()
+
+    if not dataset:
+        raise HTTPException(status_code=404, detail="Dataset not found")
+
+    task = dataset.task_type.value
+    if task == "text_classification":
+        prediction_shape = {"id": "string", "prediction": "string (label)"}
+        example_prediction = [{"id": "1", "prediction": "positive"}]
+    elif task == "named_entity_recognition":
+        prediction_shape = {"id": "string", "prediction": "list of [entity_text, entity_type] pairs"}
+        example_prediction = [{"id": "1", "prediction": [["Barack Obama", "PER"], ["Hawaii", "LOC"]]}]
+    elif task in {"document_qa", "line_qa"}:
+        prediction_shape = {"id": "string", "prediction": "string (answer text)"}
+        example_prediction = [{"id": "q1", "prediction": "Paris"}]
+    elif task == "retrieval":
+        prediction_shape = {"id": "string", "prediction": "list of doc ids (ranked best→worst)"}
+        example_prediction = [{"id": "q1", "prediction": ["doc7", "doc2", "doc9"]}]
+    elif task == "translation":
+        prediction_shape = {"id": "string", "prediction": "string (translated text)"}
+        example_prediction = [{"id": "1", "prediction": "Hola mundo"}]
+    else:
+        prediction_shape = {"id": "string", "prediction": "task-specific (see dataset.task_type)"}
+        example_prediction = [{"id": "1", "prediction": "…"}]
+
+    return {
+        "dataset_id": dataset.id,
+        "dataset_name": dataset.name,
+        "task_type": task,
+        "primary_metric": dataset.primary_metric,
+        "additional_metrics": dataset.additional_metrics or [],
+        "prediction_item_shape": prediction_shape,
+        "example": {
+            "dataset_id": dataset.id,
+            "model_name": "my-awesome-model",
+            "predictions": example_prediction,
+        },
+        "notes": [
+            "IDs must match those returned by GET /api/datasets/{dataset_id}/questions.",
+            "Do not include ground-truth answers in submissions; they are stored server-side.",
+        ],
+    }
+
+
 # ==================== Submission Endpoints ====================
 
 @app.post("/api/submissions", response_model=SuccessResponse, status_code=202)

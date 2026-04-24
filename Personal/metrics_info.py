@@ -222,12 +222,12 @@ METRICS_CATALOG = {
     },
     "matthews_corr": {
         "name": "Matthews Correlation Coefficient (MCC)",
-        "formula": "(TP×TN - FP×FN) / sqrt((TP+FP)(TP+FN)(TN+FP)(TN+FN))",
+        "formula": "Multiclass generalization via sklearn (same as binary 2×2 formula when K=2)",
         "range": "-1.0 - 1.0 (higher is better, 0 = random)",
-        "description": "Correlation between predicted and true classifications. Works well even for imbalanced datasets.",
+        "description": "Correlation between predicted and true classifications. Computed with sklearn on normalized labels; supports multiclass. Reported as 0 when fewer than two distinct labels appear in the evaluated examples.",
         "example": "MCC of 0.9 indicates very strong correlation between predictions and truth",
-        "when_to_use": "Best metric for binary classification, especially with class imbalance",
-        "limitations": "Only available for binary classification",
+        "when_to_use": "Informative for imbalanced classification; preferred over accuracy alone",
+        "limitations": "Undefined with a single class in the evaluated slice; returned as 0.0",
         "interpretation": {
             "0.8-1.0": "Excellent - Very strong correlation",
             "0.6-0.8": "Good - Strong correlation",
@@ -236,11 +236,41 @@ METRICS_CATALOG = {
         },
     },
     # Advanced NER Metrics
+    "bertscore_unavailable": {
+        "name": "BERTScore proxy (package missing)",
+        "formula": "Same numeric value as `bleu` in this build when `bert_score` is not installed",
+        "range": "0.0 - 1.0 (higher is better)",
+        "description": "Placeholder so clients can detect missing semantic MT scoring. Install `bert_score` to populate real `bertscore` instead.",
+        "example": "When BERTScore is not installed, this equals BLEU for the same hypotheses.",
+        "when_to_use": "Do not optimize for this key; install bert_score for true BERTScore F1.",
+        "limitations": "Not semantic similarity—only a BLEU mirror.",
+        "interpretation": {
+            "0.7-1.0": "See BLEU interpretation",
+            "0.5-0.7": "See BLEU interpretation",
+            "0.3-0.5": "See BLEU interpretation",
+            "0.0-0.3": "See BLEU interpretation",
+        },
+    },
+    "bertscore": {
+        "name": "BERTScore F1",
+        "formula": "Contextual embedding similarity (F1) from bert_score package",
+        "range": "0.0 - 1.0 (higher is better)",
+        "description": "Semantic similarity between hypothesis and reference. Only present when `bert_score` is installed and evaluation succeeds.",
+        "example": "Higher is better alignment with reference translations.",
+        "when_to_use": "Machine translation and paraphrase-sensitive generation",
+        "limitations": "Requires optional dependency and more compute than BLEU.",
+        "interpretation": {
+            "0.9-1.0": "Excellent semantic match",
+            "0.7-0.9": "Good",
+            "0.5-0.7": "Fair",
+            "0.0-0.5": "Poor",
+        },
+    },
     "partial_f1": {
         "name": "Partial Match F1",
-        "formula": "F1 with relaxed boundary matching",
+        "formula": "F1 with relaxed boundary matching (partial_tp vs strict micro denominators)",
         "range": "0.0 - 1.0 (higher is better)",
-        "description": "F1 score that gives credit for partially correct entity boundaries. More lenient than strict F1.",
+        "description": "F1 score that gives credit for partially correct entity boundaries. More lenient than strict F1. Denominators use strict micro TP/FP/FN counts, so partial_* are heuristic overlap scores, not a second confusion matrix.",
         "example": "Predicting 'New York' when answer is 'New York City' gets partial credit",
         "when_to_use": "Use when approximate entity boundaries are acceptable",
         "limitations": "May be too lenient for applications requiring precise extraction",
@@ -535,7 +565,10 @@ def get_metrics_for_task(task_type: str) -> list:
             "f1",
             "balanced_accuracy",
             "cohens_kappa",
+            "matthews_corr",
             "micro_f1",
+            "micro_precision",
+            "micro_recall",
         ],
         "named_entity_recognition": [
             "f1",
@@ -546,6 +579,7 @@ def get_metrics_for_task(task_type: str) -> list:
         "document_qa": ["exact_match", "token_f1", "bleu"],
         "line_qa": ["exact_match", "token_f1"],
         "retrieval": ["retrieval_accuracy", "mrr", "precision_at_3", "recall_at_3"],
+        "translation": ["bleu", "bertscore", "bertscore_unavailable"],
     }
     return task_metrics.get(task_type, ["accuracy"])
 
